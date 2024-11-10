@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商品列表</title>
+    <script src="../layui/layui.js"></script>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <link rel="stylesheet" href="css/items.css">
+    <script src="../js/jquery-1.11.3.min.js"></script>
+    <script src="js/util.js"></script>
+    <style type="text/css">
+        #itemNews img{
+            /*width: 50%;*/
+            /*height: 340px;*/
+            display: inline-block;
+            /*width: 100%;*/
+            height: 100%;
+        }
+        #itemNews div{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layui-carousel" id="itemNews" style="padding: 5px;margin: 0 auto">
+    <div carousel-item>
+        <div>
+            <div style="width: 200px;height: 30px">三顿半</div>
+            <img src="image/coffee7.png"/>
+        </div>
+        <div>
+            <div style="width: 200px;height: 30px">三顿半</div>
+            <img src="image/coffee2.png"/>
+        </div>
+        <div>
+            <div style="width: 200px;height: 30px">三顿半</div>
+            <img src="image/coffee3.png"/>
+        </div>
+        <div>
+            <div style="width: 200px;height: 30px">三顿半</div>
+            <img src="image/coffee4.png"/>
+        </div>
+        <div>
+            <div style="width: 200px;height: 30px">三顿半</div>
+            <img src="image/coffee5.png"/>
+        </div>
+    </div>
+</div>
+<div>
+    <div style="width:90%;padding: 5px;margin: 0 auto">
+        <div style="width:50%;padding: 5px;margin: 0 auto">
+            <div class="layui-input-inline" style="width: 80%">
+                <input id="itemKeywords" type="text" lay-verify="title1" autocomplete="off" placeholder="搜索你想要的咖啡" onkeydown="itemSearch(event);" class="layui-input">
+            </div>
+            <div class="layui-input-inline">
+                <button type="submit" class="layui-btn layui-btn-sm layui-btn-danger" style="width: 80px;height: 38px" onclick="queryItems();">
+                    <i class="layui-icon layui-icon-search layui-font-12"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="background-color: #f8f8f8">
+    <div style="padding: 5px;margin: 0 auto" id="items">
+        <div style="margin: 0 auto;width: 40%;text-align: center">没有满足条件的商品！</div>
+    </div>
+</div>
+<div id="pageArea" style="margin: 0 auto;text-align: center"></div>
+
+<ul class="layui-fixbar" id="toTop" style="display: none">
+<!--    <li class="layui-icon layui-fixbar-top" lay-type="top" style="display: list-item;"-->
+<!--        onclick="javascript:document.getElementById('itemNews').scrollIntoView()">-->
+<!--    </li>-->
+    <li class="layui-icon layui-fixbar-top" lay-type="top" style="display: list-item;"></li>
+</ul>
+
+<script type="text/javascript">
+    var baseUrl;
+    var place;
+    var packet;
+    var itemCount;
+    var itemData;
+    var laypage;
+
+    layui.use(['element', 'layer', 'util', 'carousel','laypage'], function () {
+        var element = layui.element
+            , layer = layui.layer
+            , util = layui.util
+            , $ = layui.$;
+        laypage = layui.laypage;
+        baseUrl = getURL();
+        place = getQueryString("place") == null ? "" : getQueryString("place");
+        packet = getQueryString("packet") == null ? "" : getQueryString("packet");
+
+        //获取商品数据
+        getUser();
+        loadPic();
+        loadData();
+        var carousel = layui.carousel;
+        //建造实例
+        carousel.render({
+            elem: '#itemNews'
+            , width: '70%' //设置容器宽度
+            , height: '340px'
+            , arrow: 'always' //始终显示箭头
+            // ,autoplay: false
+        });
+        //完整功能
+        laypage.render({
+            elem: 'pageArea'
+            ,count: itemCount
+            ,limit:8
+            ,layout: ['count', 'prev', 'page', 'next', 'limit', 'refresh', 'skip']
+            ,jump: function(obj){
+                //加载本页内容
+                loadItemDiv(obj.curr,obj.limit);
+            }
+        });
+    });
+
+    //网页拖动到距离顶部一定距离后，显示TOP按钮，否则隐藏
+    $(window).scroll(function () {
+        if($(window).scrollTop() > 150){
+            $("#toTop").fadeIn();
+        }else {
+            $("#toTop").fadeOut();
+        }
+    });
+
+    //点击回到顶部
+    $("#toTop").click(function () {
+        $("html,body").animate({scrollTop:0},400);
+    });
+
+    //加载轮播图片
+    function loadPic() {
+        $.ajax({
+            type: "post",
+            url: baseUrl +"/report",
+            data: {"type":"yearSales"},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                var html = "<div carousel-item>";
+                if (data.status) {
+                    var itemData = data.data;
+                    if(itemData != null){
+                        for(var i = 0;i<itemData.length;i++){
+                            html += "<div>";
+                            // html += "<div style=\"width: 200px;height: 30px\">"+ itemData[i].name +"</div>";
+                            html += "<img src=image/" + itemData[i].pic + ">";
+                            html += "</div>";
+                        }
+                    }
+                }
+                html += "</div>";
+                $("#itemNews").html(html);
+            }
+        });
+    }
+
+    //加载商品数据。
+    // 为什么分为4个一行？
+    // 因为栅格系统，一行12个块，只能分为3、4、6比较合适。
+    // 分6个，一行显示数据多，但每个商品区域太小，
+    // 分3个，每个商品太大，且一行显示过少；
+    // 综合效果还是4最好。
+    function loadData() {
+        var keywords = $("#itemKeywords").val();
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/listItem",
+            data: {"place": place, "packet": packet, "state": "上架", "keyWords": keywords},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    itemCount = data.count;
+                    itemData = data.data;
+                } else {
+                    layer.msg('加载失败', {
+                        icon: 1,
+                        time: 1000
+                    });
+                }
+            }
+        });
+    }
+
+    //加载本页商品
+    function loadItemDiv(curr,limit) {
+        var start = (parseInt(curr)-1)*limit;
+        var end = curr * limit;
+        if(end > itemCount){
+            end = itemCount;
+        }
+        var thisData = itemData.slice(start,end);
+        var html = "";
+        var rows = limit % 4 == 0 ? limit / 4 : Math.ceil(limit / 4);
+        for (var i = 0; i < rows; i++) {
+            html += "<div class=\"layui-row layui-col-space5\">";
+            for (var j = 0 ; j < 4; j++) {
+                if ((i * 4 + j) < thisData.length) {
+                    var list = thisData[i * 4 + j];
+                    var pic = "image/" + list.pic;
+                    html += "<div class=\"layui-col-md3\">";
+                    html += "<div class=\"layui-panel\">";
+                    html += "<div class=\"p_item\">";
+                    html += "<div class=\"layui-col-md12 p_img\"><img src=" + pic + "></div>";
+                    html += "<div class=\"layui-col-md4 p_tag\"><span class=\"layui-badge \">" + list.brand + "</span></div>";
+                    html += "<div class=\"layui-col-md8 p_name\">" + list.desc + "</div>";
+                    html += "<div class=\"layui-col-md12 p-sales\"><span class=\"layui-badge layui-bg-gray\">总销量：" + list.sales + "</span></div>";
+                    html += "<div class=\"layui-col-md5 p-operate\"> <span class=\"p-price\">¥：" + list.price + "</span></div>";
+                    html += "<div class=\"layui-col-md7 p-operate\">";
+                    if(list.stock > 0){
+                        html += "<button type=\"button\" class=\"layui-btn layui-btn-sm layui-btn-normal layui-btn-radius layui-btn-fluid\" " +
+                            "onclick=\"addCart('" + list.id + "','" + list.name + "','" + list.pic + "','" + list.price + "','" + list.stock + "')\"><i class=\"layui-icon layui-font-12\">&#xe698;</i>加入购物车</button>";
+                    }else {
+                        html += "<span class=\"layui-badge layui-bg-gray\">库存不足</span>";
+                    }
+                    html += "</div>";
+                    html += "</div>";
+                    html += "</div>";
+                    html += "</div>";
+                }
+            }
+            html += "</div>";
+        }
+        if(html != ""){
+            $("#items").html(html);
+        }else {
+            $("#items").html("<div style=\"margin: 0 auto;width: 40%;text-align: center\">没有满足条件的商品！</div>");
+        }
+    }
+
+    //搜索按钮
+    function queryItems() {
+        loadData();
+        laypage.render({
+            elem: 'pageArea'
+            ,count: itemCount
+            ,limit:8
+            ,layout: ['count', 'prev', 'page', 'next', 'limit', 'refresh', 'skip']
+            ,jump: function(obj){
+                //加载本页内容
+                loadItemDiv(obj.curr,obj.limit);
+            }
+        });
+    }
+
+    //搜索框回车事件，用于在搜索框输入内容后，直接回车，触发搜索按钮功能
+    function itemSearch(e){
+        var evt = window.event || e;
+        if(evt.keyCode == 13){
+            queryItems();
+        }
+    }
+
+    //点击添加购物车
+    function addCart(id, name, pic, price, stock) {
+        if ($.isEmptyObject(user)) {
+            layer.msg('请先登录！', {
+                icon: 1,
+                time: 500
+            }, function () {
+                parent.window.location = baseUrl + '/login.html'; //跳转到登入页
+            });
+        } else {
+            if (stock > 0) {
+                $.ajax({
+                    type: "post",
+                    url: baseUrl + "/cartAdd",
+                    data: {"itemId": id, "name": name, "pic": pic, "price": price},
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status) {
+                            layer.msg('添加成功！');
+                            parent.loadCart();
+                        } else {
+                            if (data.code == -2) {
+                                parent.window.location = baseUrl + '/login.html'; //跳转到登入页
+                            }
+                        }
+                    }
+                })
+            } else {
+                layer.msg('库存不足', {
+                    icon: 1,
+                    time: 500
+                });
+            }
+        }
+    }
+</script>
+</body>
+</html>

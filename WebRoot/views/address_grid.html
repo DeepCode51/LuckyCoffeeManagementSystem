@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../layui/layui.js"></script>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../js/jquery-1.11.3.min.js"></script>
+    <style type="text/css">
+        body{
+            text-align: center;
+        }
+        html, body {
+            width: 100%;
+            height: 99%;
+        }
+        .layui-form-label{
+            width: 80px;
+        }
+        .layui-form-item{
+            margin: 10px;
+        }
+        .layui-elem-field legend {
+            margin-left: 0;
+        }
+        .address{
+            width: 100%;
+        }
+    </style>
+    <script src="js/util.js"></script>
+</head>
+<body>
+<div class="layui-panel" style="margin: 0 auto;width: 95%">
+    <div class="inputBody showInitedDiv" style="margin: 0 auto">
+        <table class="table" id="area" lay-data="{height: 'full-200', cellMinWidth: 80}" lay-filter="list1">
+        </table>
+    </div>
+</div>
+<script type="text/html" id="barDemo1">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="switchTpl">
+    <input type="checkbox" name="defaultAddr" value="{{d.id}}" lay-skin="switch" lay-text="ON|OFF" lay-filter="setAddr" {{ d.defaultAddr == '是' ? 'checked' : '' }}>
+</script>
+
+<script>
+    var form;
+    var baseUrl;
+    var table;
+
+    layui.use(['form', 'table'], function(){
+        form = layui.form;
+        table = layui.table;
+        baseUrl = getURL();
+
+        form.render();
+
+        var h = $(document.body).height();
+
+        var loading = layer.msg('页面加载中...');
+        table.render({
+            id: 'addrTable'
+            , elem: '#area'
+            // ,toolbar: '#toolbarDemo1'
+            , url: baseUrl + '/address' //数据接口
+            , method: 'post'
+            , cols: [[
+                {type:'radio',},
+                {type: 'numbers', title: '序号'}
+                , {field: 'id', title: 'ID', hide: true}
+                , {field: 'name', title: '姓名', align: 'center',width:80}
+                , {field: 'phone', title: '电话', align: 'center',width:120}
+                , {field: 'fullAddr', title: '地址', align: 'center'}
+                // , {field: 'defaultAddr', title: '设置默认地址', align: 'center',templet:'#switchTpl',unresize: true,width:120}
+            ]]
+            , where: {"type": "list"}
+            , page: true//是否显示分页
+            , limits: [10, 20, 50]
+            // ,width:400
+            , height: h - 10 //容器高度
+            , limit: 10
+            , done: function () {
+                layer.close(loading);
+            }
+        });
+    });
+
+    //获取表单的值
+    function getData() {
+        return table.checkStatus('addrTable').data[0];
+    }
+
+
+</script>
+</body>
+</html>

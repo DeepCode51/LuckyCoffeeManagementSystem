@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <script src="../js/jquery-1.11.3.min.js"></script>
+    <script src="js/util.js"></script>
+    <style type="text/css">
+        body{
+            text-align: center;
+        }
+        html, body {
+            width: 100%;
+            height: 99%;
+        }
+        .layui-table-cell{
+            text-align:center;
+            height: auto;
+            white-space: normal;
+        }
+        .layui-form-item{
+            margin-bottom: 0;
+        }
+        /*.layui-table img{*/
+        /*    max-width:300px*/
+        /*}*/
+    </style>
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title"> <legend>商品管理</legend></fieldset>
+<div class="layui-row">
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="border-right: 1px solid #9F9F9F;">
+        <div class="layui-panel" style="margin: 0 auto;width: 99%">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-inline" style="width: 120px">
+                        <button class="layui-btn layui-btn-normal " lay-submit="" lay-filter="sort1">添加商品</button>
+                    </div>
+                    <div class="layui-input-inline" style="width: 350px;">
+                        <input type="text" name="itemValue" lay-verify="title1" autocomplete="off" placeholder="请输入商品信息搜索" class="layui-input">
+                    </div>
+                    <div class="layui-input-inline" style="width: 100px">
+                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="sort2" data-type="reload" style="float: left">查询</button>
+                    </div>
+                </div>
+            </form>
+            <div class="inputBody showInitedDiv" style="margin: 0 auto">
+                <table class="table" id="coffees" lay-data="{height: 'full-100', cellMinWidth: 80}" lay-filter="list">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="barDemo1">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="titleTpl">
+    <img src="image/{{d.pic}}" onclick="showImg(this)"/>
+</script>
+<script type="text/html" id="switchTpl">
+    <input type="checkbox" name="state" value="{{d.id}}" lay-skin="switch" lay-text="上架|下架" lay-filter="sexDemo" {{ d.state == '上架' ? 'checked' : '' }}>
+</script>
+
+<script>
+    var baseUrl = "";
+
+    layui.use('table', function(){
+        var table = layui.table
+            ,form = layui.form;
+        console.log(form);
+        baseUrl = getURL();
+
+        var h = $(document.body).height();
+
+        var loading = layer.msg('页面加载中...');
+        table.render({
+            id: 'coffeeTable'
+            ,elem: '#coffees'
+            // ,toolbar: '#toolbarDemo1'
+            ,url: baseUrl + '/listItem' //数据接口
+            ,method:'post'
+            ,cols:  [[
+                // {type:'checkbox',  fixed: 'left'},
+                {type:'numbers',title: '序号'}
+                ,{field:'id',  title: 'ID', hide: true}
+                // ,{field:'sort',  title: '类型'}
+                ,{field:'name', title: '名称',align:'center'}
+                ,{field:'pic', title: '图片',align:'center',width:130,templet:'#titleTpl'}
+                ,{field:'brand', title: '品牌',align:'center'}
+                ,{field:'price', title: '单价',align:'center',width:80}
+                ,{field:'place', title: '产地',align:'center',width:80}
+                ,{field:'packet', title: '包装',align:'center',width:80}
+                ,{field:'desc', title: '简介',align:'center'}
+                ,{field:'weight', title: '重量',align:'center'}
+                ,{field:'total', title: '总库存',align:'center',width:80 }
+                ,{field:'stock', title: '剩余库存',align:'center',width:100}
+                ,{field:'state', title: '上架/下架',align:'center',templet:'#switchTpl',unresize: true}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo1',align:'center', width:130}
+            ]]
+            // ,skin: 'line' //表格风格
+            //  ,even: true
+            ,page: true//是否显示分页
+            ,limits: [5, 20, 50]
+            // ,width:400
+            ,height: h-105 //容器高度
+            ,limit:5
+            ,done:function () {
+                layer.close(loading);
+            }
+        });
+
+        //商品上架/下架
+        form.on('switch(sexDemo)', function(obj){
+            // layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
+            $.ajax({
+                type: "post",
+                url: baseUrl + "/itemPut",
+                data: {"id":this.value,"state":obj.elem.checked ? "上架" : "下架"},
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    layer.msg(data.data);
+                }
+            });
+        });
+
+        //添加
+        form.on('submit(sort1)', function(data){
+            var param = data.field;
+            layer.open({
+                type: 2,
+                title:'商品信息',
+                area: ['680px', '600px'],
+                closeBtn:1
+                ,btn: ['确定', '取消']
+                ,yes: function(index, layero){
+                    var formData = $(layero).find("iframe")[0].contentWindow.getData();
+                    console.log(formData);
+                    if(addItem(formData)){
+                        layer.msg('添加成功！', {
+                            icon: 1,
+                            time: 500 //1秒关闭（如果不配置，默认是3秒）
+                        }, function () {
+                            //执行重载
+                            table.reload('coffeeTable', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                            });
+                            layer.close(index);
+                        });
+                    }
+                }
+                ,content: ['item_form.html'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+
+            });
+            return false;
+        });
+
+        //左侧 查询
+        form.on('submit(sort2)', function(data){
+            //执行重载
+            table.reload('coffeeTable', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                ,where: {
+                    keyWords: data.field.itemValue
+                }
+            });
+            return false;
+        });
+
+        // 监听行工具事件
+        table.on('tool(list)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){
+                layer.confirm('确定删除吗', function(index){
+                    //删除
+                    if(deleteItem(data.id)){
+                        layer.msg('删除成功！', {
+                            icon: 1,
+                            time: 500 //1秒关闭（如果不配置，默认是3秒）
+                        }, function () {
+                            //执行重载
+                            table.reload('coffeeTable', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                            });
+                            layer.close(index);
+                        });
+                    }else {
+                        layer.msg('删除失败！');
+                    }
+                });
+            } else if(obj.event === 'edit'){
+                layer.open({
+                    type: 2,
+                    title:'商品信息修改',
+                    area: ['680px', '600px'],
+                    // anim: 5,
+                    closeBtn:1
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        var formData = $(layero).find("iframe")[0].contentWindow.getData();
+                        formData["id"] = data.id;
+                        if(saveItem(formData)){
+                            layer.msg('修改成功！', {
+                                icon: 1,
+                                time: 500 //1秒关闭（如果不配置，默认是3秒）
+                            }, function () {
+                                //执行重载
+                                table.reload('coffeeTable', {
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                });
+                                layer.close(index);
+                            });
+                        }
+                    }
+                    ,content: ['item_form.html?id='+data.id] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            }
+        });
+    });
+
+    // 通过点击，使图片放大（方法）
+    function showImg(t) {
+        //Layui的弹出层
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 0,
+            area: '516px',
+            skin: 'layui-layer-nobg', //没有背景色
+            shadeClose: true,
+            content: '<img style="display: inline-block; width: 100%; height: 100%;" src="'+t.src+'">'
+        });
+    }
+
+
+    //新增商品
+    function addItem(formData) {
+        var flag = false;
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/itemAdd",
+            data: formData,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    flag = true;
+                }
+            }
+        });
+        return flag;
+    }
+
+    //保存商品
+    function saveItem(formData) {
+        var flag = false;
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/itemUpdate",
+            data: formData,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    flag = true;
+                }
+            }
+        });
+        return flag;
+    }
+
+    //删除商品
+    function deleteItem(id) {
+        var flag = false;
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/itemDelete",
+            data: {"id":id},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    flag = true;
+                }
+            }
+        });
+        return flag;
+    }
+</script>
+
+</body>
+</html>

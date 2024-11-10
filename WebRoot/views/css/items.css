@@ -1,0 +1,113 @@
+.layui-body {
+    /*left: 300px;*/
+    /*right: 200px;*/
+}
+
+.layui-panel {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2px;
+    background-color: #fff;
+    color: #666;
+}
+
+.layui-panel {
+    box-shadow: 1px 1px 4px rgb(0 0 0 / 8%);
+    border-color: #eee;
+}
+
+.goods{
+    margin: 0 auto;
+    width: 100%;
+    text-align: center;
+    /*padding-top:40px;*/
+}
+
+#items{
+    /*bottom: 0;*/
+    /*position: fixed;*/
+    /*top: 60px;*/
+    width: 70%;
+    /*margin: auto;*/
+    /*overflow: auto*/
+    padding: 10px;
+    margin-top: 5px;
+}
+
+.p_item{
+    width: 100%;
+    height: 275px
+}
+
+.p_img {
+    height: 180px;
+    text-align: center;
+}
+
+.p_img img {
+    width: 80%;
+    height: 100%;
+}
+
+.p_tag {
+    height: 40px;
+    padding: 10px;
+    color: #666;
+    text-decoration: none;
+    font-size: 12px;
+    overflow: hidden; /*超出的部分隐藏起来。*/
+    text-overflow: ellipsis;
+}
+
+.p_name {
+    height: 40px;
+    padding: 5px;
+    color: #666;
+    text-decoration: none;
+    font-size: 12px;
+    overflow: hidden; /*超出的部分隐藏起来。*/
+    text-overflow: ellipsis;
+}
+
+.p-sales {
+    width: 100%;
+    height: 20px;
+    padding-left: 5px;
+    overflow: hidden;
+    color: #a7a7a7;
+    font-size: 12px;
+    font-weight: 400;
+    font-family: verdana;
+}
+
+/*.p-price{*/
+/*    height: 30px;*/
+/*    line-height: 30px;*/
+/*}*/
+
+.p-price {
+    width: 100px;
+    padding-left: 5px;
+    height: 100%;
+    text-align: center;
+    line-height: 25px;
+    color: #e4393c;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: Verdana;
+}
+
+.p-operate {
+    padding: 0 5px;
+}
+.cart button {
+    background-color: #FAFAFA;
+    border: 1px solid #DDD;
+    font-size: 13px;
+    cursor: pointer;
+    color: #f30213;
+}
+
+.cartNum{
+    left: 15px;
+}

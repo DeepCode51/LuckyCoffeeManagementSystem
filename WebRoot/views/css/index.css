@@ -1,0 +1,38 @@
+.layui-body {
+    /*left: 300px;*/
+    /*right: 200px;*/
+}
+
+.layui-panel {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2px;
+    background-color: #fff;
+    color: #666;
+}
+
+.layui-panel {
+    box-shadow: 1px 1px 4px rgb(0 0 0 / 8%);
+    border-color: #eee;
+}
+
+
+iframe {
+    width: 100%;
+    /*height: 403px;*/
+    height: 100%;
+}
+
+
+
+.cart button {
+    background-color: #FAFAFA;
+    border: 1px solid #DDD;
+    font-size: 13px;
+    cursor: pointer;
+    color: #f30213;
+}
+
+.cartNum{
+    left: 15px;
+}

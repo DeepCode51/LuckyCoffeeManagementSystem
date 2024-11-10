@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>统计分析</title>
+    <script src="../js/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <script src="js/util.js"></script>
+    <style type="text/css">
+        body{
+            text-align: center;
+        }
+        html, body {
+            width: 100%;
+            height: 99%;
+        }
+        .layui-elem-field legend{
+            margin-left: 0;
+        }
+        .layui-form-label{
+            width: 80px;
+        }
+        .layui-form-item{
+            /*margin: 10px;*/
+        }
+    </style>
+    <script src="../js/echarts.min.js"></script>
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title"> <legend>销售统计</legend></fieldset>
+<div class="layui-row">
+    <div id="total" class="layui-col-xs8 layui-col-sm8 layui-col-md8" style="height: 300px;">
+        商品销量TOP5（销售量（单位：件），销售额（单位：元））
+        <table class="layui-hide" id="demo"></table>
+    </div>
+    <div class="layui-col-xs1 layui-col-sm1 layui-col-md1" style="height: 300px;text-align: center"></div>
+    <div id="packet" class="layui-col-xs3 layui-col-sm3 layui-col-md3" style="height: 300px;text-align: center">
+        <div class="layui-panel">
+            全站销量统计
+            <table class="layui-hide" id="demo2"></table>
+        </div>
+    </div>
+    <div id="month" class="layui-col-xs7 layui-col-sm7 layui-col-md7" style="height: 300px;">
+
+    </div>
+    <div id="area" class="layui-col-xs5 layui-col-sm5 layui-col-md5" style="height: 300px;">
+
+    </div>
+
+</div>
+<script type="text/javascript">
+    var baseUrl = "";
+    var placeArr = [];
+    var packetArr = [];
+
+    layui.use('table', function () {
+        var table = layui.table;
+
+        //展示已知数据
+        table.render({
+            elem: '#demo'
+            ,url: baseUrl + '/report' //数据接口
+            ,method:'post'
+            , cols: [[ //标题栏
+                // {type:'numbers',title: '序号',align:'center'},
+                {field: 'id', title: 'ID', width: 80,hide: true}
+                , {field: 'name', title: '商品名称', width: 200,align:'center'}
+                , {field: 'brand', title: '品牌', width: 110,align:'center'}
+                , {field: 'daySalesNum', title: '日销量', width: 80,align:'center'}
+                , {field: 'daySales', title: '日销额', width: 110,align:'center'}
+                , {field: 'monthSalesNum', title: '月销量', width: 80,align:'center'}
+                , {field: 'monthSales', title: '月销额', width: 110,align:'center'}
+                , {field: 'yearSalesNum', title: '年销量', width: 80,align:'center'}
+                , {field: 'yearSales', title: '年销额', align:'center'}
+            ]]
+            //
+            , where: {"type": "itemSales"}
+            //,skin: 'line' //表格风格
+            , even: true
+            //,page: true //是否显示分页
+            //,limits: [5, 7, 10]
+            //,limit: 5 //每页默认显示的数量
+        });
+
+        //展示已知数据
+        table.render({
+            elem: '#demo2'
+            ,url: baseUrl + '/report' //数据接口
+            ,method:'post'
+            , cols: [[ //标题栏
+                // {type:'numbers',title: '序号',align:'center'},
+                // {field: 'id', title: 'ID', width: 80,hide: true},
+                {field: 'dayType', title: '统计类型', width: 100,align:'center'}
+                , {field: 'salesNum', title: '销售量（件）', width: 120,align:'center'}
+                , {field: 'sales', title: '销售额(元)', align:'center'}
+            ]]
+            // ,width: 350
+            //,skin: 'line' //表格风格
+            , where: {"type": "sales"}
+            , even: true
+            //,page: true //是否显示分页
+            //,limits: [5, 7, 10]
+            //,limit: 5 //每页默认显示的数量
+        });
+    });
+
+    $(function () {
+        baseUrl = getURL();
+        loadSort();
+        loadByArea();
+        // loadByPacket();
+        // loadByAge();
+        loadByMonth();
+        loadByTotal();
+    });
+
+    function loadByTotal() {
+
+    }
+
+    //销售产品按产地统计
+    // function loadByArea() {
+    //     var reportData = getReportData("area");
+    //     var placeData = [];
+    //     for(var i = 0;i<placeArr.length;i++){
+    //         if(reportData.hasOwnProperty(placeArr[i])){
+    //             placeData.push(reportData[placeArr[i]]);
+    //         }else {
+    //             placeData.push("0");
+    //         }
+    //     }
+    //     var myChart = echarts.init(document.getElementById("area"));
+    //     var option = {
+    //         title: {
+    //             text: '产地分布',
+    //             left: 'center'
+    //         },
+    //         xAxis: {
+    //             type: 'category',
+    //             data: placeArr
+    //         },
+    //         yAxis: {
+    //             type: 'value'
+    //         },
+    //         series: [
+    //             {
+    //                 data: placeData,
+    //                 type: 'bar'
+    //             }
+    //         ]
+    //     };
+    //     myChart.setOption(option);
+    // }
+
+    //销售产品按包装统计
+    function loadByArea() {
+        var reportData = getReportData("area");
+        var packetData = [];
+        for(var i in reportData){
+            var obj = {};
+            obj.name = i;
+            obj.value = reportData[i];
+            packetData.push(obj);
+        }
+        var myChart = echarts.init(document.getElementById("area"));
+        var option = {
+            title: {
+                text: '产地分布',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left'
+            },
+            series: [
+                {
+                    name: '销量',
+                    type: 'pie',
+                    radius: '50%',
+                    data: packetData,
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        myChart.setOption(option);
+    }
+
+    //按销售月份统计
+    function loadByMonth() {
+        var reportData = getReportData("month");
+        if(!$.isEmptyObject(reportData)){
+            var monthData = ['','','','','','','','','','','',''];
+            for(var i in reportData){
+                monthData[i-1] = reportData[i];
+            }
+            var myChart = echarts.init(document.getElementById("month"));
+            var option = {
+                title: {
+                    text: '月度销量',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        magicType: { show: true, type: ['line', 'bar'] },
+                    }
+                },
+                calculable: true,
+                xAxis: [
+                    {
+                        type: 'category',
+                        // prettier-ignore
+                        data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value'
+                    }
+                ],
+                series: [
+                    {
+                        name: '销量',
+                        type: 'bar',
+                        data: monthData,
+                        // markPoint: {
+                        //     data: [
+                        //         { name: 'Max', value: 182.2, xAxis: 7, yAxis: 183 },
+                        //         { name: 'Min', value: 2.3, xAxis: 11, yAxis: 3 }
+                        //     ]
+                        // },
+                        markLine: {
+                            data: [{ type: 'average', name: 'Avg' }]
+                        }
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        }
+    }
+
+    //获取报表接口数据
+    function getReportData(type) {
+        var reportData = {};
+        $.ajax({
+            type: "post",
+            url: baseUrl +"/report",
+            data: {"type":type},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    reportData = data.data;
+                }
+            }
+        });
+        return reportData;
+    }
+
+    //加载分类，包括产地和包装
+    function loadSort() {
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/sort",
+            data: {},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    $.each(data.data,function (index,item) {
+                        if(item.sort == "包装"){
+                            packetArr.push(item.sortValue);
+                        }else if(item.sort == "产地"){
+                            placeArr.push(item.sortValue);
+                        }
+                    });
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

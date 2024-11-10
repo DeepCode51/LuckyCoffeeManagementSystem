@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>订单管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <script src="../js/jquery-1.11.3.min.js"></script>
+    <script src="js/util.js"></script>
+    <style type="text/css">
+        body{
+            text-align: center;
+        }
+        html, body {
+            width: 100%;
+            height: 99%;
+        }
+        .layui-elem-field legend{
+            margin-left: 0;
+        }
+        .layui-table-cell{
+            text-align:center;
+            height: auto;
+            white-space: normal;
+        }
+        .layui-elem-quote {
+            padding:5px;
+            margin-bottom: 0;
+            border-left:0 solid #009688;
+        }
+        .layui-btn + .layui-btn {
+            margin-left: 0;
+        }
+
+        .receiverInfo{
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title"> <legend>订单管理</legend></fieldset>
+    <div class="layui-row" style="margin:0 auto;width: 90%">
+        <div class="layui-col-xs7 layui-col-sm7 layui-col-md7" style="border-right: 1px solid #9F9F9F;">
+            <div class="layui-panel" style="margin: 0 auto;width: 99%">
+                <div class="demoTable">
+                    <div class="layui-inline" style="width: 260px">
+                        <input class="layui-input" name="value1" id="orderKeyWords" placeholder="请输入" autocomplete="off">
+                    </div>
+                    <button class="layui-btn" data-type="queryData">搜索</button>
+                </div>
+                <div class="inputBody showInitedDiv" style="margin: 0 auto">
+                    <table class="table" id="order" lay-data="{height: 'full-200', cellMinWidth: 80}" lay-filter="list1">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs5 layui-col-sm5 layui-col-md5">
+            <blockquote class="layui-elem-quote">
+<!--                <div class="layui-row">-->
+<!--                    <div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="text-align: right;">-->
+<!--                        收  货  人：-->
+<!--                    </div>-->
+<!--                    <div class="layui-col-xs10 layui-col-sm10 layui-col-md10 receiver" style="text-align: left;padding-left: 10px;">-->
+<!--                    </div>-->
+<!--                </div>-->
+                <div class="layui-row" style="height: 28px;">
+                    <div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="text-align: right;line-height: 28px">
+                        收货地址：
+                    </div>
+                    <div class="layui-col-xs10 layui-col-sm10 layui-col-md10 receiverAddr" style="text-align: left;padding-left: 10px;line-height: 28px">
+                    </div>
+                </div>
+            </blockquote>
+            <div class="layui-panel" style="margin: 0 auto;width: 99%">
+                <div class="inputBody showInitedDiv">
+                    <table class="table" id="cart" lay-data="{height: 'full-200', cellMinWidth: 80}" lay-filter="list2">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="barDemo1">
+    <a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-normal pay" lay-event="pay" style="display: {{d.state == '待支付' ? 'inline-block' : 'none'}};width: 100px;" onclick="finish('{{d.id}}','0')"><i class="layui-icon">&#xe65e;</i>支付</a>
+    <a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-normal send" lay-event="send" style="display: {{d.state == '待发货' ? 'inline-block' : 'none'}};width: 100px;" onclick="finish('{{d.id}}','1')"><i class="layui-icon">&#xe609;</i>发货</a>
+    <a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-normal end" lay-event="end" style="display: {{d.state == '运输中' ? 'inline-block' : 'none'}};width: 100px;" onclick="finish('{{d.id}}','2')"><i class="layui-icon">&#x1005;</i>确定收货</a>
+<!--    <a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-primary query" lay-event="end" style="width: 70px" onclick="queryTail('{{d.id}}')"><i class="layui-icon">&#xe63c;</i>查看</a>-->
+</script>
+
+<script type="text/html" id="titleTpl">
+    <img src="image/{{d.itemPic}}" onclick="showImg(this)"/>
+</script>
+
+<script type="text/javascript">
+    var baseUrl = "";
+    var $yu = jQuery.noConflict();
+    var table;
+
+    layui.use(['form', 'table'], function(){
+        var form = layui.form;
+        table = layui.table;
+
+        baseUrl = getURL();
+        getUser();
+
+        var h = $yu(document.body).height();
+
+        var loading = layer.msg('页面加载中...');
+        table.render({
+            id: 'orderTable'
+            ,elem: '#order'
+            // ,toolbar: '#toolbarDemo1'
+            ,url: baseUrl + '/listOrder' //数据接口
+            ,method:'post'
+            ,cols:  [[
+                // {type:'radio',},
+                {type:'numbers',title: '序号'}
+                ,{field:'id',  title: 'ID', hide: true}
+                // ,{field:'sort',  title: '类型'}
+                ,{field:'orderNo', title: '订单号',align:'center',width:140}
+                ,{field:'totalPrice', title: '订单金额',align:'center',width:100}
+                // ,{field:'userName', title: '收货人',align:'center',width:120}
+                ,{field:'createTime', title: '订单时间',align:'center',width:160}
+                ,{field:'state', title: '订单状态',align:'center',width:100}
+                ,{fixed: 'right', title:'操作',align:'center',toolbar: '#barDemo1'}
+            ]]
+            ,where:{"sort":"产地"}
+            ,page: true//是否显示分页
+            ,limits: [10, 20, 50]
+            // ,width:400
+            ,height: h-105 //容器高度
+            ,limit:10
+            ,done:function () {
+                layer.close(loading);
+                if(user.role == "管理员"){
+                    $yu(".pay").css("display","none");
+                    $yu(".end").css("display","none");
+                }else {
+                    $yu(".send").css("display","none");
+                }
+            }
+        });
+
+        var loading2 = layer.msg('页面加载中...');
+        table.render({
+            id: 'cartTable'
+            ,elem: '#cart'
+            // ,toolbar: '#toolbarDemo2'
+            ,url: baseUrl + '/getCartByOrder' //数据接口
+            ,method:'post'
+            ,cols:  [[
+                // {type:'checkbox',  fixed: 'left'},
+                {type:'numbers',title: '序号'}
+                ,{field:'id',  title: 'ID', hide: true}
+                ,{field:'itemName', title: '名称',align:'center'}
+                ,{field:'itemPic', title: '图片',align:'center',width:130,templet:'#titleTpl'}
+                ,{field:'price', title: '单价',align:'center'}
+                ,{field:'num', title: '数量',align:'center',}
+                ,{field:'totalPrice', title: '小计',align:'center'}
+            ]]
+            ,where:{"orderId":"1"}
+            ,page: true//是否显示分页
+            ,limits: [10, 20, 50]
+            // ,width:400
+            ,height: h-105 //容器高度
+            ,limit:10
+            ,done:function () {
+                layer.close(loading2);
+            }
+        });
+
+        //触发行单击事件
+        table.on('row(list1)', function(obj){
+            table.reload('cartTable', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                },
+                where: {
+                    orderId: obj.data.id
+                }
+            });
+            var address = obj.data.address;
+            if(address != ""){
+                $(".receiverAddr").html(obj.data.address + "   <span class='receiverInfo'>" + obj.data.userName + " " +obj.data.phone + "</span>");
+            }else {
+                $(".receiverAddr").html("");
+            }
+        });
+
+        var $ = layui.$, active = {
+            queryData: function(){
+                var orderKeyWords = $('#orderKeyWords');
+                //执行重载
+                table.reload('orderTable', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    ,where: {
+                        keyWords: orderKeyWords.val()
+                    }
+                });
+            },
+            queryCartData: function(){
+                var cartKeyWords = $('#cartKeyWords');
+                console.log(cartKeyWords);
+                //执行重载
+                table.reload('cartTable', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    ,where: {
+                        keyWords: cartKeyWords.val()
+                    }
+                });
+            },
+            getCheckData: function(){ //获取选中数据
+                var checkData = table.checkStatus('orderTable').data;
+                if($.isEmptyObject(checkData)){
+                    layer.msg("请勾选一条记录");
+                }else {
+                    console.log(checkData);
+                    var thisOrder = checkData[0];
+                    if(thisOrder.state == "待完成"){
+                        layer.confirm('确定完成订单吗', function(index){
+                            //完成
+                            $.ajax({
+                                type: "post",
+                                url: baseUrl + "/orderUpdate",
+                                data: {"id":thisOrder.id},
+                                dataType: "json",
+                                success: function (data) {
+                                    if (data.status) {
+                                        //执行重载
+                                        table.reload('orderTable', {
+                                            page: {
+                                                curr: 1 //重新从第 1 页开始
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                            //刷新
+                            layer.close(index);
+                        });
+                    }else {
+                        layer.msg("订单已完成，无需重复完成");
+                    }
+                }
+            }
+        };
+
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+
+        //右侧 添加
+        form.on('submit(sort3)', function(data){
+            var param = data.field;
+            if(param.sortValue == null || param.sortValue == "" || typeof(param.sortValue) == "undefined"){
+                layer.msg('请输入添加内容！');
+                return false;
+            }
+            param["sort"] = "包装";
+            layer.confirm('确定添加分类吗', function(index){
+                $.ajax({
+                    type: "post",
+                    url: baseUrl + "/sortAdd",
+                    data: param,
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status) {
+                            layer.msg('提交成功！');
+                            //执行重载
+                            table.reload('packetTable', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                            });
+                        }else {
+                            if(data.code == -2){
+                                layer.msg('请先登录！', {
+                                    icon: 1,
+                                    time: 500 //1秒关闭（如果不配置，默认是3秒）
+                                }, function () {
+                                    parent.window.location = baseUrl + '/login.html'; //跳转到登入页
+                                });
+                            }
+                        }
+                    }
+                });
+                layer.close(index);
+            });
+            return false;
+        });
+        //右侧 查询
+        form.on('submit(sort4)', function(data){
+            //执行重载
+            table.reload('packetTable', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                ,where: {
+                    keyWords: data.field.sortValue
+                }
+            });
+            return false;
+        });
+
+        //监听行工具事件
+        table.on('tool(list1)', function(obj){
+            var data = obj.data;
+            console.log(data);
+            console.log(obj.event);
+        });
+
+    });
+
+    // 通过点击，使图片放大（方法）
+    function showImg(t) {
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 0,
+            area: '516px',
+            skin: 'layui-layer-nobg', //没有背景色
+            shadeClose: true,
+            content: '<img style="display: inline-block; width: 100%; height: 100%;" src="'+t.src+'">'
+        });
+    }
+
+    function getUser() {
+        $yu.ajax({
+            type: "post",
+            url: getURL() + "/user",
+            data: {},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    user = data.data;
+                }
+            }
+        });
+    }
+
+    //订单状态变更
+    function finish(id,state) {
+        var tips = "";
+        if(state == 0){
+            tips = "支付";
+        }else if(state == 1){
+            tips = "发货";
+        }else if(state == 2){
+            tips = "收货";
+        }
+        layer.confirm('确定' + tips + '吗', function(index){
+            $yu.ajax({
+                type: "post",
+                url: baseUrl + "/orderUpdate",
+                data: {"id":id,"state":state},
+                dataType: "json",
+                success: function (data) {
+                    if (data.status) {
+                        layer.msg(tips + '成功！');
+                        //执行重载
+                        table.reload('orderTable', {
+                            page: {
+                                curr: 1 //重新从第 1 页开始
+                            }
+                        });
+                    }
+                }
+            });
+            layer.close(index);
+        });
+    }
+
+</script>
+    </body>
+    </html>

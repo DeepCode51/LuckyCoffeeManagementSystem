@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>后台管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <style>
+        /* 移动端 */
+        @media screen and (max-width: 768px) {
+            .layui-layout-admin .layui-layout-left,
+            .layui-layout-admin .layui-body,
+            .layui-layout-admin .layui-footer {
+                left: 0;
+            }
+
+            .layui-layout-admin .layui-side {
+                left: -300px;
+            }
+        }
+        .logoInfo{
+            font-size: 25px;
+            font-family:"Lucida Calligraphy", cursive, serif, sans-serif;
+            /*font-weight: bold;*/
+        }
+    </style>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/index.css">
+    <script src="../js/jquery-1.11.3.min.js"></script>
+
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo layui-hide-xs layui-bg-black">
+            <img src="image/coffee.png" style="height:60px;float: left;margin-left: 25px;">
+            <div class="logoInfo">后台管理</div>
+        </div>
+        <ul class="layui-nav layui-layout-left">
+        </ul>
+        <ul class="layui-nav layui-layout-right" lay-bar="disabled">
+
+            <li class="layui-nav-item layui-hide layui-show-md-inline-block" id="loginInfo">
+                <a href="../login.html"><i class="layui-icon">&#xe66f;</i></a>
+                <dl class="layui-nav-child">
+                    <dd>
+                        <a href="javascript:;" onclick="openUser();"><i class="layui-icon">&#xe66f;个人中心</i></a>
+                    </dd>
+                    <dd class="personCenter">
+                        <a href="javascript:;" onclick="updatePwd();"><i class="layui-icon">&#xe66f;修改密码</i></a>
+                    </dd>
+<!--                    <dd>-->
+<!--                        <a href="../index.html"><i class="layui-icon">&#xe68e;首页</i></a>-->
+<!--                    </dd>-->
+                    <dd>
+                        <a href="../logout"><i class="layui-icon">&#xe682;注销</i></a>
+                    </dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll"> <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed"> <a class="" href="javascript:;" onclick="openSort();">分类管理</a>
+                </li>
+                <li class="layui-nav-item"> <a href="javascript:;" onclick="openItems();">商品管理</a></li>
+                <li class="layui-nav-item"><a href="javascript:;" onclick="openUsers();">用户管理</a></li>
+                <li class="layui-nav-item"><a href="javascript:;" onclick="openOrders();">订单管理</a></li>
+                <li class="layui-nav-item"><a href="javascript:;" onclick="openReport();">销量统计</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="layui-body" style=" bottom: 5px;">
+        <iframe id="main" src="report.html" frameborder="0" scrolling="auto"></iframe>
+    </div>
+</div>
+<script src="../layui/layui.js"></script>
+<script src="js/util.js"></script>
+<script>
+    var baseUrl = "";
+
+    //JS
+    layui.use(['element', 'layer', 'util'], function () {
+        var element = layui.element
+            , layer = layui.layer
+            , util = layui.util
+            , $ = layui.$;
+
+        console.log("admin");
+        baseUrl = getURL();
+
+        getUser();
+        loadData();
+        initIframe();
+    });
+
+    //加载数据，包括用户信息
+    function loadData() {
+        setTimeout(function () {
+            if($.isEmptyObject(user)){
+                $("#loginInfo").find("a").eq(0).attr("href","../login.html");
+                $("#loginInfo").find("a").eq(0).append("登录");
+                $(".personCenter").css("display","none");
+                // $(".personCenter").removeClass("layui-show");
+                // $("#loginInfo").html("<a href=\"views/login.html\" ><i class=\"layui-icon\">&#xe66f;</i>登录</a>");
+            }else{
+                // $("#loginInfo").html("<a href=\"javascript:;\" ><i class=\"layui-icon\">&#xe66f;</i>"+ user.name + "</a>");
+                $("#loginInfo").find("a").eq(0).attr("href","javascript:;");
+                $("#loginInfo").find("a").eq(0).append(user.name);
+                $(".personCenter").css("display","block");
+            }
+        },500);
+    }
+
+    function initIframe() {
+        var p_div = $(".layui-body").height();
+        // var h = document.body.clientHeight;
+        document.getElementById("main").style.height = p_div-10 + "px";
+    }
+
+    //打开分类管理
+    function openSort() {
+        if($.isEmptyObject(user)){
+            //登录页面
+            layer.msg('请先登录！', {
+                icon: 1,
+                time: 500 //1秒关闭（如果不配置，默认是3秒）
+            }, function(){
+                window.location = baseUrl + '/login.html'; //跳转到登入页
+            });
+        }else {
+            document.getElementById("main").src = "sort.html";
+        }
+    }
+
+    //打开商品管理
+    function openItems() {
+        if($.isEmptyObject(user)){
+            //登录页面
+            layer.msg('请先登录！', {
+                icon: 1,
+                time: 500 //1秒关闭（如果不配置，默认是3秒）
+            }, function(){
+                window.location = baseUrl + '/login.html'; //跳转到登入页
+            });
+        }else {
+            document.getElementById("main").src = "item_grid.html";
+        }
+    }
+
+    function openItems_old() {
+        if($.isEmptyObject(user)){
+            //登录页面
+            layer.msg('请先登录！', {
+                icon: 1,
+                time: 500 //1秒关闭（如果不配置，默认是3秒）
+            }, function(){
+                window.location = baseUrl + '/login.html'; //跳转到登入页
+            });
+        }else {
+            document.getElementById("main").src = "items_grid.jsp";
+        }
+    }
+
+    //添加商品
+    function addItem() {
+        document.getElementById("main").src = "views/items_grid.jsp";
+    }
+
+
+    //打开用户管理
+    function openUsers() {
+        if($.isEmptyObject(user)){
+            //登录页面
+            layer.msg('请先登录！', {
+                icon: 1,
+                time: 500 //1秒关闭（如果不配置，默认是3秒）
+            }, function(){
+                window.location = baseUrl + '/login.html'; //跳转到登入页
+            });
+        }else {
+            document.getElementById("main").src = "user_grid.html";
+        }
+    }
+
+    //订单管理
+    function openOrders() {
+        if($.isEmptyObject(user)){
+            //登录页面
+            layer.msg('请先登录！', {
+                icon: 1,
+                time: 500
+            }, function(){
+                window.location = baseUrl + '/login.html'; //跳转到登入页
+            });
+        }else {
+            document.getElementById("main").src = "order_grid.html";
+        }
+    }
+
+    //个人中心
+    function openUser() {
+        if($.isEmptyObject(user)){
+            //登录页面
+            layer.msg('请先登录！', {
+                icon: 1,
+                time: 500
+            }, function(){
+                window.location = baseUrl + '/login.html'; //跳转到登入页
+            });
+        }else {
+            document.getElementById("main").src = "user_form.html?id=" + user.id;
+        }
+    }
+
+    //统计分析
+    function openReport() {
+        if($.isEmptyObject(user)){
+            //登录页面
+            layer.msg('请先登录！', {
+                icon: 1,
+                time: 500
+            }, function(){
+                window.location = baseUrl + '/login.html'; //跳转到登入页
+            });
+        }else {
+            document.getElementById("main").src = "report.html";
+        }
+    }
+
+    //销量统计
+    function openReport2() {
+        if($.isEmptyObject(user)){
+            //登录页面
+            layer.msg('请先登录！', {
+                icon: 1,
+                time: 500
+            }, function(){
+                window.location = baseUrl + '/login.html'; //跳转到登入页
+            });
+        }else {
+            document.getElementById("main").src = "report2.html";
+        }
+    }
+
+    //修改密码
+    function updatePwd() {
+        layer.open({
+            type: 2,
+            title:'修改密码',
+            area: ['300px', '220px'],
+            // anim: 5,
+            closeBtn:1
+            ,btn: ['确定', '取消']
+            ,yes: function(index, layero){
+                var formData = $(layero).find("iframe")[0].contentWindow.getData();
+                console.log(formData);
+                formData["type"] = "update";
+                $.ajax({
+                    type: "post",
+                    url: baseUrl + "/userPwd",
+                    data: formData,
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status) {
+                            layer.msg('修改成功，请重新登录！', {
+                                icon: 1,
+                                time: 500
+                            }, function(){
+                                layer.close(index);
+                                window.location = baseUrl + '/login.html'; //跳转到登入页
+                            });
+                        }else {
+                            layer.msg(data.data);
+                        }
+                    }
+                })
+            }
+            ,content: ['user_pwd.html?','no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <script src="../js/jquery-1.11.3.min.js"></script>
+    <script src="js/util.js"></script>
+    <style type="text/css">
+        body{
+            text-align: center;
+        }
+        html, body {
+            width: 100%;
+            height: 99%;
+        }
+        .layui-table-cell{
+            text-align:center;
+            height: auto;
+            white-space: normal;
+        }
+        .layui-form-item{
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+<!--<blockquote class="layui-elem-quote layui-text">-->
+<!--    商品管理-->
+<!--</blockquote>-->
+<fieldset class="layui-elem-field layui-field-title"> <legend>用户管理</legend></fieldset>
+<div class="layui-row" >
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="border-right: 1px solid #9F9F9F;">
+        <div class="layui-panel" style="margin: 0 auto;width: 99%">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-inline" style="width: 350px;">
+                        <input type="text" name="keyWords" lay-verify="title1" autocomplete="off" placeholder="请输入信息搜索" class="layui-input">
+                    </div>
+                    <div class="layui-input-inline" style="width: 100px">
+                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="sort2" data-type="reload" style="float: left">查询</button>
+                    </div>
+                </div>
+            </form>
+            <div class="inputBody showInitedDiv" style="margin: 0 auto">
+                <table class="table" id="coffees" lay-data="{height: 'full-100', cellMinWidth: 80}" lay-filter="list">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<a class="layui-btn layui-btn-xs" lay-event="edit">编辑信息</a>-->
+<script type="text/html" id="barDemo1">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="reset">密码重置</a>
+</script>
+
+<script type="text/javascript">
+    var baseUrl = "";
+
+    layui.use(['form', 'table'], function(){
+        var form = layui.form,
+        table = layui.table;
+
+        baseUrl = getURL();
+
+        var h = $(document.body).height();
+
+        var loading = layer.msg('页面加载中...');
+        table.render({
+            id: 'coffeeTable'
+            ,elem: '#coffees'
+            // ,toolbar: '#toolbarDemo1'
+            ,url: baseUrl + '/listUser' //数据接口
+            ,method:'post'
+            ,cols:  [[
+                // {type:'checkbox',  fixed: 'left'},
+                {type:'numbers',title: '序号'}
+                ,{field:'id',  title: 'ID', hide: true}
+                // ,{field:'sort',  title: '类型'}
+                ,{field:'name', title: '姓名',align:'center'}
+                ,{field:'loginName', title: '账号',align:'center'}
+                ,{field:'age', title: '年龄',align:'center'}
+                ,{field:'sex', title: '性别',align:'center'}
+                ,{field:'desc', title: '描述',align:'center'}
+                ,{field:'hisTotal', title: '购买次数',align:'center'}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo1',align:'center', width:180}
+            ]]
+             // ,skin: 'line' //表格风格
+            //  ,even: true
+            ,page: true//是否显示分页
+            ,limits: [10, 20, 50]
+            // ,width:400
+            ,height: h-105 //容器高度
+            ,limit:10
+            ,done:function () {
+                layer.close(loading);
+            }
+        });
+
+        //查询
+        form.on('submit(sort2)', function(data){
+            //执行重载
+            table.reload('coffeeTable', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                ,where: {
+                    keyWords: data.field.keyWords
+                }
+            });
+            return false;
+        });
+
+        //监听行工具事件
+        table.on('tool(list)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){
+                layer.confirm('确定删除吗', function(index){
+                    //删除
+                    if(deleteUser(data.id)){
+                        layer.msg('删除成功！', {
+                            icon: 1,
+                            time: 500 //1秒关闭（如果不配置，默认是3秒）
+                        }, function () {
+                            //执行重载
+                            table.reload('coffeeTable', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                            });
+                            layer.close(index);
+                        });
+                    }else {
+                        layer.msg('删除失败！');
+                    }
+                });
+            } else if(obj.event === 'edit'){
+                layer.open({
+                    type: 2,
+                    title:'信息修改',
+                    area: ['400px', '480px'],
+                    // anim: 5,
+                    closeBtn:1
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        var formData = $(layero).find("iframe")[0].contentWindow.getData();
+                        formData["id"] = data.id;
+                        if(saveUser(formData)){
+                            layer.msg('修改成功！', {
+                                icon: 1,
+                                time: 500 //1秒关闭（如果不配置，默认是3秒）
+                            }, function () {
+                                //执行重载
+                                table.reload('coffeeTable', {
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                });
+                                layer.close(index);
+                            });
+                        }
+                    }
+                    ,content: ['user_form.html?id='+data.id + '&open=grid','no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            }else if(obj.event === 'reset'){
+                //密码重置
+                layer.confirm('确定重置吗', function(index){
+                    $.ajax({
+                        type: "post",
+                        url: baseUrl + "/userPwd",
+                        data: {"type":"reset","id":data.id},
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.status) {
+                                layer.msg('重置成功！', {
+                                    icon: 1,
+                                    time: 500
+                                }, function(){
+                                    //执行重载
+                                    table.reload('coffeeTable', {
+                                        page: {
+                                            curr: 1 //重新从第 1 页开始
+                                        }
+                                    });
+                                    layer.close(index);
+                                });
+                            }
+                        }
+                    })
+                });
+            }
+        });
+    });
+
+    //保存用户信息
+    function saveUser(formData) {
+        var flag = false;
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/userUpdate",
+            data: formData,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    flag = true;
+                }
+            }
+        });
+        return flag;
+    }
+
+    //删除用户
+    function deleteUser(id) {
+        var flag = false;
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/userDelete",
+            data: {"id":id},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    flag = true;
+                }
+            }
+        });
+        return flag;
+    }
+
+</script>
+</body>
+</html>

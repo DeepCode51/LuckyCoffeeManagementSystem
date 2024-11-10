@@ -1,0 +1,7 @@
+.component{display: none}
+.component{position: absolute; width: 150px; left: 135px; top: 16px; }
+.component .layui-input{height: 30px; padding-left: 32px; padding-right: 10px; background-color: #424652; background-color: rgba(255,255,255,.05); border: none 0; color: #fff; color: rgba(255,255,255,.5); font-size: 12px;}
+.component .layui-form-select .layui-edge{display: none; border-top-color: #999;}
+.component .layui-form-select dl{top: 36px; background-color: rgba(255,255,255,.9)}
+.component > .layui-icon{position: absolute; left:  10px; top: 9px; font-size: 12px; color: rgba(255,255,255,.5);}
+.header-demo .component{left: 200px;}

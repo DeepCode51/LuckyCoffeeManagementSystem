@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+    <!--登录 类路径-->
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>coffee.servlet.LoginServlet</servlet-class>
+    </servlet>
+    <!--注册 类路径-->
+    <servlet>
+        <servlet-name>RegServlet</servlet-name>
+        <servlet-class>coffee.servlet.RegServlet</servlet-class>
+    </servlet>
+    <!--注销 类路径-->
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>coffee.servlet.LogoutServlet</servlet-class>
+    </servlet>
+    <!--用户信息 类路径-->
+    <servlet>
+        <servlet-name>UserServlet</servlet-name>
+        <servlet-class>coffee.servlet.UserServlet</servlet-class>
+    </servlet>
+    <!--根据id获取用户信息 浏览器访问路径-->
+    <servlet>
+        <servlet-name>UserInfoServlet</servlet-name>
+        <servlet-class>coffee.servlet.UserInfoServlet</servlet-class>
+    </servlet>
+    <!--用户信息列表 类路径-->
+    <servlet>
+        <servlet-name>UsersServlet</servlet-name>
+        <servlet-class>coffee.servlet.UsersServlet</servlet-class>
+    </servlet>
+    <!--个人信息修改 类路径-->
+    <servlet>
+        <servlet-name>UserUpdateServlet</servlet-name>
+        <servlet-class>coffee.servlet.UserUpdateServlet</servlet-class>
+    </servlet>
+    <!--用户列表-删除 类路径-->
+    <servlet>
+        <servlet-name>UserDeleteServlet</servlet-name>
+        <servlet-class>coffee.servlet.UserDeleteServlet</servlet-class>
+    </servlet>
+    <!--用户密码-修改 类路径-->
+    <servlet>
+        <servlet-name>UserPwdServlet</servlet-name>
+        <servlet-class>coffee.servlet.UserPwdServlet</servlet-class>
+    </servlet>
+    <!--商品信息获取 类路径-->
+    <servlet>
+        <servlet-name>ItemServlet</servlet-name>
+        <servlet-class>coffee.servlet.ItemServlet</servlet-class>
+    </servlet>
+    <!--商品浏览 类路径-->
+    <servlet>
+        <servlet-name>ItemsServlet</servlet-name>
+        <servlet-class>coffee.servlet.ItemsServlet</servlet-class>
+    </servlet>
+    <!--商品添加 类路径-->
+    <servlet>
+        <servlet-name>ItemAddServlet</servlet-name>
+        <servlet-class>coffee.servlet.ItemAddServlet</servlet-class>
+    </servlet>
+    <!--商品修改 类路径-->
+    <servlet>
+        <servlet-name>ItemUpdateServlet</servlet-name>
+        <servlet-class>coffee.servlet.ItemUpdateServlet</servlet-class>
+    </servlet>
+    <!--商品删除 类路径-->
+    <servlet>
+        <servlet-name>ItemDeleteServlet</servlet-name>
+        <servlet-class>coffee.servlet.ItemDeleteServlet</servlet-class>
+    </servlet>
+    <!--商品上架下架 类路径-->
+    <servlet>
+        <servlet-name>ItemPutServlet</servlet-name>
+        <servlet-class>coffee.servlet.ItemPutServlet</servlet-class>
+    </servlet>
+    <!--购物车 类路径-->
+    <servlet>
+        <servlet-name>CartServlet</servlet-name>
+        <servlet-class>coffee.servlet.CartServlet</servlet-class>
+    </servlet>
+    <!--购物车添加 类路径-->
+    <servlet>
+        <servlet-name>CartAddServlet</servlet-name>
+        <servlet-class>coffee.servlet.CartAddServlet</servlet-class>
+    </servlet>
+    <!--购物车修改 类路径-->
+    <servlet>
+        <servlet-name>CartUpdateServlet</servlet-name>
+        <servlet-class>coffee.servlet.CartUpdateServlet</servlet-class>
+    </servlet>
+    <!--购物车删除 类路径-->
+    <servlet>
+        <servlet-name>CartDeleteServlet</servlet-name>
+        <servlet-class>coffee.servlet.CartDeleteServlet</servlet-class>
+    </servlet>
+    <!--订单添加 类路径-->
+    <servlet>
+        <servlet-name>OrderAddServlet</servlet-name>
+        <servlet-class>coffee.servlet.OrderAddServlet</servlet-class>
+    </servlet>
+    <!--订单修改 类路径-->
+    <servlet>
+        <servlet-name>OrderUpdateServlet</servlet-name>
+        <servlet-class>coffee.servlet.OrderUpdateServlet</servlet-class>
+    </servlet>
+    <!--订单删除 类路径-->
+    <servlet>
+        <servlet-name>OrderDeleteServlet</servlet-name>
+        <servlet-class>coffee.servlet.OrderDeleteServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrderServlet</servlet-name>
+        <servlet-class>coffee.servlet.OrderServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrdersServlet</servlet-name>
+        <servlet-class>coffee.servlet.OrdersServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrderCartServlet</servlet-name>
+        <servlet-class>coffee.servlet.OrderCartServlet</servlet-class>
+    </servlet>
+    <!--分类添加 类路径-->
+    <servlet>
+        <servlet-name>SortAddServlet</servlet-name>
+        <servlet-class>coffee.servlet.SortAddServlet</servlet-class>
+    </servlet>
+    <!--分类保存 类路径-->
+    <servlet>
+        <servlet-name>SortUpdateServlet</servlet-name>
+        <servlet-class>coffee.servlet.SortUpdateServlet</servlet-class>
+    </servlet>
+    <!--分类删除 类路径-->
+    <servlet>
+        <servlet-name>SortDeleteServlet</servlet-name>
+        <servlet-class>coffee.servlet.SortDeleteServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SortServlet</servlet-name>
+        <servlet-class>coffee.servlet.SortServlet</servlet-class>
+    </servlet>
+    <!--分类校验 类路径-->
+    <servlet>
+        <servlet-name>SortCheckServlet</servlet-name>
+        <servlet-class>coffee.servlet.SortCheckServlet</servlet-class>
+    </servlet>
+    <!--行政单位 类路径-->
+    <servlet>
+        <servlet-name>AreaServlet</servlet-name>
+        <servlet-class>coffee.servlet.AreaServlet</servlet-class>
+    </servlet>
+    <!--用户地址 类路径-->
+    <servlet>
+        <servlet-name>AddressServlet</servlet-name>
+        <servlet-class>coffee.servlet.AddressServlet</servlet-class>
+    </servlet>
+    <!--统计分析 类路径-->
+    <servlet>
+        <servlet-name>ReportServlet</servlet-name>
+        <servlet-class>coffee.servlet.ReportServlet</servlet-class>
+    </servlet>
+    <!--登录 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+    <!--注册 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>RegServlet</servlet-name>
+        <url-pattern>/reg</url-pattern>
+    </servlet-mapping>
+    <!--注销 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    <!--用户信息 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>UserServlet</servlet-name>
+        <url-pattern>/user</url-pattern>
+    </servlet-mapping>
+    <!--根据id获取用户信息 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>UserInfoServlet</servlet-name>
+        <url-pattern>/getUser</url-pattern>
+    </servlet-mapping>
+    <!--用户信息列表 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>UsersServlet</servlet-name>
+        <url-pattern>/listUser</url-pattern>
+    </servlet-mapping>
+    <!--个人信息修改 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>UserUpdateServlet</servlet-name>
+        <url-pattern>/userUpdate</url-pattern>
+    </servlet-mapping>
+    <!--用户列表-删除 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>UserDeleteServlet</servlet-name>
+        <url-pattern>/userDelete</url-pattern>
+    </servlet-mapping>
+    <!--用户密码-修改 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>UserPwdServlet</servlet-name>
+        <url-pattern>/userPwd</url-pattern>
+    </servlet-mapping>
+    <!--商品浏览 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>ItemServlet</servlet-name>
+        <url-pattern>/getItem</url-pattern>
+    </servlet-mapping>
+    <!--商品浏览 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>ItemsServlet</servlet-name>
+        <url-pattern>/listItem</url-pattern>
+    </servlet-mapping>
+    <!--商品添加 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>ItemAddServlet</servlet-name>
+        <url-pattern>/itemAdd</url-pattern>
+    </servlet-mapping>
+    <!--商品修改 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>ItemUpdateServlet</servlet-name>
+        <url-pattern>/itemUpdate</url-pattern>
+    </servlet-mapping>
+    <!--商品删除 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>ItemDeleteServlet</servlet-name>
+        <url-pattern>/itemDelete</url-pattern>
+    </servlet-mapping>
+    <!--商品上架下架 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>ItemPutServlet</servlet-name>
+        <url-pattern>/itemPut</url-pattern>
+    </servlet-mapping>
+    <!--购物车 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>CartServlet</servlet-name>
+        <url-pattern>/cart</url-pattern>
+    </servlet-mapping>
+    <!--商品添加 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>CartAddServlet</servlet-name>
+        <url-pattern>/cartAdd</url-pattern>
+    </servlet-mapping>
+    <!--商品修改 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>CartUpdateServlet</servlet-name>
+        <url-pattern>/cartUpdate</url-pattern>
+    </servlet-mapping>
+    <!--购物车删除 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>CartDeleteServlet</servlet-name>
+        <url-pattern>/cartDelete</url-pattern>
+    </servlet-mapping>
+    <!--订单添加 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>OrderAddServlet</servlet-name>
+        <url-pattern>/orderAdd</url-pattern>
+    </servlet-mapping>
+    <!--订单修改 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>OrderUpdateServlet</servlet-name>
+        <url-pattern>/orderUpdate</url-pattern>
+    </servlet-mapping>
+    <!--订单删除 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>OrderDeleteServlet</servlet-name>
+        <url-pattern>/orderDelete</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrderServlet</servlet-name>
+        <url-pattern>/order</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrdersServlet</servlet-name>
+        <url-pattern>/listOrder</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrderCartServlet</servlet-name>
+        <url-pattern>/getCartByOrder</url-pattern>
+    </servlet-mapping>
+    <!--分类添加 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>SortAddServlet</servlet-name>
+        <url-pattern>/sortAdd</url-pattern>
+    </servlet-mapping>
+    <!--分类修改 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>SortUpdateServlet</servlet-name>
+        <url-pattern>/sortUpdate</url-pattern>
+    </servlet-mapping>
+    <!--分类删除 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>SortDeleteServlet</servlet-name>
+        <url-pattern>/sortDelete</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SortServlet</servlet-name>
+        <url-pattern>/sort</url-pattern>
+    </servlet-mapping>
+    <!--分类校验 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>SortCheckServlet</servlet-name>
+        <url-pattern>/sortCheck</url-pattern>
+    </servlet-mapping>
+    <!--行政单位 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>AreaServlet</servlet-name>
+        <url-pattern>/area</url-pattern>
+    </servlet-mapping>
+    <!--用户地址 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>AddressServlet</servlet-name>
+        <url-pattern>/address</url-pattern>
+    </servlet-mapping>
+    <!--统计分析 浏览器访问路径-->
+    <servlet-mapping>
+        <servlet-name>ReportServlet</servlet-name>
+        <url-pattern>/report</url-pattern>
+    </servlet-mapping>
+    <!--项目启动首页-->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+</web-app>

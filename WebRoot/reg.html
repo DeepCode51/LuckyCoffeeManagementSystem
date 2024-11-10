@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <script src="layui/layui.js"></script>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="views/css/login.css">
+</head>
+<body ayadmin-themealias="default" class="layui-layout-body">
+<div id="LAY_app" class="layadmin-tabspage-none">
+    <div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="display: none;">
+        <div class="layadmin-user-login-main">
+            <div class="layadmin-user-login-box layadmin-user-login-header">
+                <h2>用户注册</h2>
+                <p></p>
+            </div>
+            <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+                <div class="layui-form-item">
+                    <label class="layadmin-user-login-icon layui-icon layui-icon-cellphone"
+                           for="LAY-user-login-cellphone"></label>
+                    <input type="text" name="cellphone" id="LAY-user-login-cellphone" lay-verify="phone"
+                           placeholder="账号" class="layui-input">
+                </div>
+                <div class="layui-form-item">
+                    <label class="layadmin-user-login-icon layui-icon layui-icon-password"
+                           for="LAY-user-login-password"></label>
+                    <input type="password" name="password" id="LAY-user-login-password" lay-verify="pass"
+                           placeholder="密码" class="layui-input">
+                </div>
+                <div class="layui-form-item">
+                    <label class="layadmin-user-login-icon layui-icon layui-icon-password"
+                           for="LAY-user-login-repass"></label>
+                    <input type="password" name="repass" id="LAY-user-login-repass" lay-verify="required"
+                           placeholder="确认密码" class="layui-input">
+                </div>
+                <div class="layui-form-item">
+                    <label class="layadmin-user-login-icon layui-icon layui-icon-username"
+                           for="LAY-user-login-nickname"></label>
+                    <input type="text" name="nickname" id="LAY-user-login-nickname" lay-verify="nickname"
+                           placeholder="姓名" class="layui-input">
+                </div>
+                <div class="layui-form-item">
+                    <input type="checkbox" name="agreement" lay-skin="primary" title="同意用户协议" checked="">
+                    <div class="layui-unselect layui-form-checkbox layui-form-checked" lay-skin="primary">
+                        <span>同意用户协议</span><i class="layui-icon layui-icon-ok"></i></div>
+                </div>
+                <div class="layui-form-item">
+                    <button class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="LAY-user-reg-submit">注 册
+                    </button>
+                </div>
+                <div class="layui-trans layui-form-item layadmin-user-login-other">
+                    <a href="login.html" class="layadmin-user-jump-change layadmin-link layui-hide-xs">用已有帐号登入</a>
+<!--                    <a lay-href="/login" class="layadmin-user-jump-change layadmin-link layui-hide-sm layui-show-xs-inline-block">登入</a>-->
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-trans layadmin-user-login-footer">
+            <p>Copyright © 战鹰翱翔</p>
+        </div>
+
+    </div>
+    <script>
+        layui.use('form', function () {
+            var $ = layui.$
+                , form = layui.form;
+            form.render();
+
+            //提交
+            form.on('submit(LAY-user-reg-submit)', function (obj) {
+                var field = obj.field;
+                //确认密码
+                if (field.password !== field.repass) {
+                    return layer.msg('两次密码输入不一致');
+                }
+
+                //是否同意用户协议
+                if (!field.agreement) {
+                    return layer.msg('你必须同意用户协议才能注册');
+                }
+                reg(field);
+                return false;
+            });
+
+        });
+
+        //注册
+        function reg(form) {
+            $.ajax({
+                type: "post",
+                url: "reg",
+                data: {"loginName": form.cellphone, "loginPwd": form.password, "nickname": form.nickname},
+                dataType: "json",
+                success: function (data) {
+                    if (data.status) {
+                        layer.msg('注册成功！', {
+                            icon: 1,
+                            time: 500
+                        }, function () {
+                            window.location = 'login.html'; //跳转到登入页
+                        });
+                    } else {
+                        layer.msg(data.data);
+                    }
+                }
+            });
+        }
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户编辑页面</title>
+    <script src="../layui/layui.js"></script>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../js/jquery-1.11.3.min.js"></script>
+    <style type="text/css">
+        body{
+            text-align: center;
+        }
+        html, body {
+            width: 100%;
+            height: 99%;
+        }
+        .layui-form-label{
+            width: 80px;
+        }
+        .layui-form-item{
+            margin: 10px;
+        }
+        .layui-elem-field legend {
+            margin-left: 0;
+        }
+        .address{
+            width: 100%;
+        }
+    </style>
+    <script src="js/util.js"></script>
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title userBtn"> <legend>个人中心</legend></fieldset>
+<div class="layui-row" >
+    <div class="layui-col-xs4 layui-col-sm4 layui-col-md4" >
+        <div class="layui-panel" style="margin: 0 auto;width: 80%">
+            <form class="layui-form layui-form-pane" action="" lay-filter="userForm">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">账号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="loginName"  placeholder="请输入" disabled autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">昵称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name"  placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">年龄</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="age"  placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">性别</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="sex" value="男" title="男">
+                        <input type="radio" name="sex" value="女" title="女">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">描述</label>
+                    <div class="layui-input-block">
+                        <textarea name="myDesc" placeholder="请输入内容" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item userBtn">
+                    <div class="layui-input-inline">
+                        <button class="layui-btn" lay-submit lay-filter="formDemo">保存</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="layui-col-xs8 layui-col-sm8 layui-col-md8" style="border-left: 1px solid #9F9F9F;">
+        <div class="layui-panel" style="margin: 0 auto;width: 95%">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item layui-row layui-col-space5">
+                    <div class="layui-col-xs2 layui-col-sm2 layui-col-md2">
+                        <label class="layui-form-label" style="width: 100%">地址</label>
+                    </div>
+                    <div class="layui-col-xs2 layui-col-sm2 layui-col-md2">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <select name="province" id="province" lay-filter="province" lay-search>
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs2 layui-col-sm2 layui-col-md2">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <select name="city" id="city" lay-filter="city">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs2 layui-col-sm2 layui-col-md2">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <select name="district" id="district" lay-filter="district">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs4 layui-col-sm4 layui-col-md4">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" name="address" lay-verify="required" autocomplete="off" placeholder="详细地址"
+                                   class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-row layui-col-space5">
+                    <div class="layui-col-xs2 layui-col-sm2 layui-col-md2">
+                        <label class="layui-form-label" style="width: 100%">姓名</label>
+                    </div>
+                    <div class="layui-col-xs3 layui-col-sm3 layui-col-md3">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入"
+                               class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-col-xs2 layui-col-sm2 layui-col-md2">
+                        <label class="layui-form-label" style="width: 100%">联系电话</label>
+                    </div>
+                    <div class="layui-col-xs3 layui-col-sm3 layui-col-md3">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <input type="text" name="phone" lay-verify="phone" autocomplete="off" placeholder="请输入"
+                                   class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-col-xs2 layui-col-sm2 layui-col-md2">
+                        <div class="layui-input-inline" style="width: 100%">
+                            <button type="submit" class="layui-btn layui-btn-sm" lay-submit=""
+                                    lay-filter="addAddr" data-type="reload">添加地址
+                            </button>
+                            <button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="inputBody showInitedDiv" style="margin: 0 auto">
+                <table class="table" id="area" lay-data="{height: 'full-200', cellMinWidth: 80}" lay-filter="list1">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="barDemo1">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="switchTpl">
+    <input type="checkbox" name="defaultAddr" value="{{d.id}}" lay-skin="switch" lay-text="是|否" lay-filter="setAddr" {{ d.defaultAddr == '是' ? 'checked' : '' }}>
+</script>
+
+<script>
+    var form;
+    var baseUrl;
+    var id;
+
+    layui.use(['form', 'table'], function(){
+        form = layui.form;
+        var table = layui.table;
+        baseUrl = getURL();
+
+        id = getQueryString("id")==null?"":getQueryString("id");
+        var open = getQueryString("open")==null?"":getQueryString("open");
+        if(open == "grid"){
+            $(".userBtn").css("display","none");
+        }else {
+            $(".userBtn").css("display","block");
+        }
+        loadForm();
+        form.render();
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            var formData = data.field;
+            formData["id"] = id;
+            saveForm(formData);
+            return false;
+        });
+
+        form.on('submit(addAddr)', function(data){
+            var formData = data.field;
+            console.log(formData);
+            formData["type"] = "add";
+            layer.confirm('确定添加地址吗', function (index) {
+                $.ajax({
+                    type: "post",
+                    url: baseUrl + "/address",
+                    data: formData,
+                    dataType: "json",
+                    async: false,
+                    success: function (data) {
+                        if (data.status) {
+                            if (data.status) {
+                                layer.msg('添加成功！');
+                                //执行重载
+                                table.reload('addrTable', {
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+                //刷新
+                layer.close(index);
+            });
+            return false;
+        });
+
+        loadProvince();
+
+        form.on('select(province)', function(data){
+            loadCity('city',2,data.value);
+        });
+
+        form.on('select(city)', function(data){
+            loadCity('district',3,data.value);
+        });
+
+        var h = $(document.body).height();
+
+        var loading = layer.msg('页面加载中...');
+        table.render({
+            id: 'addrTable'
+            , elem: '#area'
+            // ,toolbar: '#toolbarDemo1'
+            , url: baseUrl + '/address' //数据接口
+            , method: 'post'
+            , cols: [[
+                // {type:'checkbox',  fixed: 'left'},
+                {type: 'numbers', title: '序号'}
+                , {field: 'id', title: 'ID', hide: true}
+                , {field: 'name', title: '姓名', align: 'center',width:80}
+                , {field: 'phone', title: '电话', align: 'center',width:120}
+                , {field: 'fullAddr', title: '地址', align: 'center'}
+                , {field: 'defaultAddr', title: '设置默认地址', align: 'center',templet:'#switchTpl',unresize: true,width:120}
+                , {fixed: 'right', title: '操作', toolbar: '#barDemo1', align: 'center', width: 120}
+            ]]
+            , where: {"type": "list"}
+            , page: true//是否显示分页
+            , limits: [10, 20, 50]
+            // ,width:400
+            , height: h - 180 //容器高度
+            , limit: 10
+            , done: function () {
+                layer.close(loading);
+            }
+        });
+
+        //设置默认地址
+        form.on('switch(setAddr)', function(obj){
+            // layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
+            $.ajax({
+                type: "post",
+                url: baseUrl + "/address",
+                data: {"id":this.value,"defaultAddr":obj.elem.checked ? "是" : "否","type":"setAddr"},
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    layer.msg(data.data);
+                    table.reload('addrTable', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                    });
+                }
+            });
+        });
+
+        //监听行工具事件
+        table.on('tool(list1)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('确定删除吗', function (index) {
+                    //删除
+                    $.ajax({
+                        type: "post",
+                        url: baseUrl + "/address",
+                        data: {"id": data.id,"type":"del"},
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.status) {
+                                //执行重载
+                                table.reload('addrTable', {
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    //刷新
+                    layer.close(index);
+                });
+            } else if (obj.event === 'edit') {
+                layer.open({
+                    type: 2,
+                    title:'地址编辑',
+                    area: ['460px', '600px'],
+                    // anim: 5,
+                    closeBtn:1
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        var formData = $(layero).find("iframe")[0].contentWindow.getData();
+                        console.log(formData);
+                        formData["id"] = data.id;
+                        formData["defaultAddr"] = data.defaultAddr;
+                        formData["type"] = "save";
+                        if(saveAddr(formData)){
+                            layer.msg('修改成功！', {
+                                icon: 1,
+                                time: 500 //1秒关闭（如果不配置，默认是3秒）
+                            }, function () {
+                                //执行重载
+                                table.reload('addrTable', {
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                });
+                                layer.close(index);
+                            });
+                        }
+                    }
+                    ,content: ['address_form.html?id='+data.id] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            }
+        });
+    });
+
+    //加载表单
+    function loadForm() {
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/getUser",
+            data: {"id":id},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    //给表单赋值
+                    form.val("userForm", data.data);
+                }
+            }
+        });
+    }
+
+    //获取表单的值
+    function getData() {
+        return form.val("userForm");
+    }
+
+    //保存表单数据
+    function saveForm(formData) {
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/userUpdate",
+            data: formData,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    layer.msg('保存成功！', {
+                        icon: 1,
+                        time: 500
+                    });
+                }else {
+                    layer.msg('保存成功！');
+                }
+            }
+        });
+    }
+
+    //加载省份
+    function loadProvince() {
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/area",
+            data: {"type":"1"},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    $.each(data.data,function (index,item) {
+                        $('#province').append(new Option(item.area, item.area));// 下拉菜单里添加元素
+                    });
+                }
+            }
+        });
+        form.render("select");
+    }
+
+    //加载地级市、区县
+    function loadCity(name,type,pValue) {
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/area",
+            data: {"type":type,"parent":pValue},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    if(type == "2"){
+                        $('#' + name).html(" <option></option>");
+                    }
+                    // else {
+                    //     $('#' + name).html("<option></option>");
+                    // }
+                    $.each(data.data,function (index,item) {
+                        $('#' + name).append(new Option(item.area, item.area));// 下拉菜单里添加元素
+                    });
+                }
+            }
+        });
+        form.render("select");
+    }
+
+    //保存表单数据
+    function saveAddr(formData) {
+        var flag = false;
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/address",
+            data: formData,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    flag = true;
+                }
+            }
+        });
+        return flag;
+    }
+</script>
+</body>
+</html>

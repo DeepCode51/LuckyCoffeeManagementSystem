@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>购物车</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <script src="../js/jquery-1.11.3.min.js"></script>
+    <script src="js/util.js"></script>
+    <style type="text/css">
+        body {
+            text-align: center;
+        }
+
+        html, body {
+            width: 100%;
+            height: 99%;
+        }
+
+        .layui-table-cell {
+            text-align: center;
+            height: auto;
+            white-space: normal;
+        }
+
+        .laytable-cell-1-0-5{
+            height: 40px;
+            margin: 0 auto;
+        }
+        /*.layui-table img{*/
+        /*    max-width:300px*/
+        /*}*/
+        /*.cartNum{*/
+        /*    top:0;*/
+        /*    text-align: center;*/
+        /*}*/
+
+        .layui-slider-input {
+            width: 70px;
+            height: 30px;
+            border: 1px solid #e6e6e6;
+            border-radius: 3px;
+            font-size: 32px;
+            line-height: 30px;
+            /*position: absolute;*/
+             right: 5px;
+             top: 0;
+
+        }
+        .layui-elem-quote {
+            margin-bottom: 0;
+            padding:8px;
+        }
+        .itemState {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            margin: 0 auto 10px;
+            text-align: center;
+            background-color: #c2c2c2;
+            cursor: pointer;
+            color: #000000;
+            border-radius: 50%;
+            opacity:0.6;
+            font-size: 12px;
+        }
+</style>
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title">
+    <legend>购物车</legend>
+</fieldset>
+<div class="layui-row" style="margin:0 auto;width: 85%">
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+        <div class="layui-panel" style="margin: 0 auto;width: 99%">
+            <blockquote class="layui-elem-quote">
+                <div class="layui-row">
+                    <div class="layui-col-xs2 layui-col-sm2 layui-col-md2 ">
+                        <div class="addAddr" style="display: none">
+                            <a class="layui-btn layui-btn-sm layui-btn-normal" lay-event="more" onclick="openAddr();">添加收货地址 <i class="layui-icon layui-icon-location"></i></a>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs2 layui-col-sm2 layui-col-md2 receiver" style="line-height: 35px">
+                    </div>
+                    <div class="layui-col-xs5 layui-col-sm5 layui-col-md5 receiverAddr" style="text-align: left;padding-left: 20px;line-height: 35px">
+                    </div>
+                    <div class="layui-col-xs2 layui-col-sm2 layui-col-md2 allAddr" style="text-align: left;padding-left: 20px;">
+                        <a class="layui-btn layui-btn-sm layui-btn-primary" lay-event="more" onclick="openAllAddr();">更多地址  <i class="layui-icon layui-icon-down"></i></a>
+                    </div>
+                    <div class="layui-col-xs1 layui-col-sm1 layui-col-md1 commitOrder" style="float: right">
+                        <a class="layui-btn layui-btn-sm layui-btn-normal" lay-event="more" onclick="commitOrder();"><i class="layui-icon">&#xe65e;</i>提交订单</a>
+                    </div>
+                </div>
+            </blockquote>
+            <div class="inputBody showInitedDiv" style="margin: 0 auto">
+                <table class="table" id="coffees" lay-data="{height: 'full-100', cellMinWidth: 80}" lay-filter="list">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="barDemo1">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="titleTpl">
+    <img src="image/{{d.itemPic}}" onclick="showImg(this)"/>
+</script>
+<script type="text/html" id="numTpl">
+    <div class="layui-slider-input layui-input cartNum" style="display: {{d.itemState == '上架' ? 'block' : 'none'}}">
+        <div class="layui-slider-input-txt">
+            <input type="text" class="layui-input" value="{{d.num}}">
+        </div>
+        <div class="layui-slider-input-btn">
+            <i class="layui-icon layui-icon-up" onclick="addNum(this,'{{d.id}}','{{d.price}}');"></i>
+            <i class="layui-icon layui-icon-down" onclick="cunNum(this,'{{d.id}}','{{d.price}}');"></i>
+        </div>
+    </div>
+    <div class="itemState" style="display: {{d.itemState == '下架' ? 'block' : 'none'}}">
+        已下架
+    </div>
+</script>
+
+<script type="text/javascript">
+    var baseUrl = "";
+    var table;
+    var tableCount;
+    var addrData;
+
+    layui.use(['form', 'table'], function () {
+        var form = layui.form;
+            table = layui.table;
+
+        baseUrl = getURL();
+
+        var h = $(document.body).height();
+
+        var loading = layer.msg('页面加载中...');
+        table.render({
+            id: 'coffeeTable'
+            , elem: '#coffees'
+            // ,toolbar: '#toolbarDemo1'
+            , url: baseUrl + '/cart' //数据接口
+            , method: 'post'
+            , cols: [[
+                // {type:'checkbox',  fixed: 'left'},
+                {type: 'numbers', title: '序号', width: 100}
+                , {field: 'id', title: 'ID', hide: true}
+                // ,{field:'sort',  title: '类型'}
+                , {field: 'itemName', title: '名称', align: 'center'}
+                , {field: 'itemPic', title: '图片', align: 'center', width: 200, templet: '#titleTpl'}
+                , {field: 'price', title: '单价', align: 'center', width: 150}
+                , {field: 'num', title: '数量', align: 'center', width: 80, templet: '#numTpl'}
+                , {field: 'totalPrice', title: '小计', align: 'center', width: 150}
+                , {fixed: 'right', title: '操作', toolbar: '#barDemo1', width: 150,align: 'center'}
+            ]]
+            ,skin: 'line' //表格风格
+            //  ,even: true
+            , where: {"type": "1"}
+            // , page: true//是否显示分页
+            , limits: [5, 20, 50]
+            // ,width:400
+            , height: h - 130 //容器高度
+            , limit: 5
+            , done: function (res, curr, count) {
+                tableCount = count;
+                //加载页面按钮（提交订单等）
+                loadButton();
+                layer.close(loading);
+            }
+        });
+
+        //监听行工具事件
+        table.on('tool(list)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('确定删除吗', function (index) {
+                    //删除
+                    if (cartDelete(data.id)) {
+                        layer.msg('删除成功！', {
+                            icon: 1,
+                            time: 500 //1秒关闭（如果不配置，默认是3秒）
+                        }, function () {
+                            //执行重载
+                            table.reload('coffeeTable', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                            });
+                            layer.close(index);
+                        });
+                        parent.loadCart();
+                    } else {
+                        layer.msg('删除失败！');
+                    }
+                });
+            }
+        });
+        //加载默认地址信息
+        loadDefaultAddr();
+    });
+
+    //加载默认地址
+    function loadDefaultAddr() {
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/address",
+            data: {"type":"defaultAddr"},
+            dataType: "json",
+            success: function (data) {
+                if (data.status) {
+                    addrData = data.data;
+                    $(".receiver").html("收货人： " + addrData.name + " " +addrData.phone);
+                    $(".receiverAddr").html("收货地址： " + addrData.fullAddr);
+                }else {
+                    $(".addAddr").css("display","block");
+                    $(".allAddr").css("display","none");
+                }
+            }
+        });
+    }
+
+    //加载页面按钮（提交订单等）
+    function loadButton() {
+        if(tableCount > 0){
+            $(".commitOrder").css("display","block");
+        }else {
+            $(".commitOrder").css("display","none");
+        }
+    }
+
+    // 通过点击，使图片放大（方法）
+    function showImg(t) {
+        //Layui的弹出层
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 0,
+            area: '516px',
+            skin: 'layui-layer-nobg', //没有背景色
+            shadeClose: true,
+            content: '<img style="display: inline-block; width: 100%; height: 100%;" src="' + t.src + '">'
+        });
+    }
+
+    //增加数量
+    function addNum(obj,id,price){
+        var numObj = $(obj).closest(".cartNum").find("input[class='layui-input']");
+        var num = numObj.val();
+        num++;
+        numObj.val(num);
+        $(obj).closest("td").next().find(".layui-table-cell").text((num * price).toFixed(2));
+        updateCart(id,num,price);
+    }
+
+    //减少数量
+    function cunNum(obj,id,price) {
+        var numObj = $(obj).closest(".cartNum").find("input[class='layui-input']");
+        var num = numObj.val();
+        num--;
+        if(num == 0){
+            layer.msg('数量不能为0', {
+                icon: 1,
+                time: 1000
+            })
+        }else {
+            numObj.val(num);
+            $(obj).closest("td").next().find(".layui-table-cell").text((num * price).toFixed(2));
+            updateCart(id,num,price);
+        }
+    }
+
+    //更新购物车
+    function updateCart(id,num,price) {
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/cartUpdate",
+            data: {"id":id,"num":num,"price":price},
+            dataType: "json",
+            success: function (data) {
+                if (data.status) {
+                    // table.reload('coffeeTable', {
+                    //     page: {
+                    //         curr: 1 //重新从第 1 页开始
+                    //     }
+                    // });
+                }
+            }
+        });
+    }
+
+    //购物车商品删除
+    function cartDelete(id) {
+        var flag = false;
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/cartDelete",
+            data: {"id":id},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    flag = true;
+                }
+            }
+        });
+        return flag;
+    }
+
+    //进入个人中心
+    function openAddr() {
+        parent.openUser();
+    }
+
+    //打开地址列表
+    function openAllAddr() {
+        layer.open({
+            type: 2,
+            title:'收货地址管理',
+            area: ['800px', '500px'],
+            // anim: 5,
+            closeBtn:1
+            ,btn: ['确定', '取消']
+            ,yes: function(index, layero){
+                var formData = $(layero).find("iframe")[0].contentWindow.getData();
+                if (formData != null) {
+                    addrData = formData;
+                    $(".receiver").html("收货人： " + addrData.name + " " +addrData.phone);
+                    $(".receiverAddr").html("收货地址： " + addrData.fullAddr);
+                }
+                layer.close(index);
+            }
+            ,content: ['address_grid.html'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+    }
+
+    //提交订单
+    function commitOrder() {
+        if(addrData == null){
+            layer.msg("请先添加收货地址！");
+        }else {
+            if(tableCount > 0){
+                layer.confirm('确定提交订单吗', function(index){
+                    $.ajax({
+                        type: "post",
+                        url: baseUrl + "/orderAdd",
+                        data: addrData,
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.status) {
+                                layer.msg('提交成功！');
+                                parent.loadCart();
+                                window.location = baseUrl + '/views/order_grid.html'; //跳转到订单页
+                            }else {
+                                if(data.code == -2){
+                                    layer.msg('请先登录！', {
+                                        icon: 1,
+                                        time: 500 //1秒关闭（如果不配置，默认是3秒）
+                                    }, function () {
+                                        parent.window.location = baseUrl + '/login.html'; //跳转到登入页
+                                    });
+                                }
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            }else {
+                layer.msg("购物车为空，请先添加商品！");
+            }
+        }
+
+    }
+</script>
+</body>
+</html>

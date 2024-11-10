@@ -1,0 +1,289 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>好运咖啡</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <style>
+        /* 移动端 */
+        @media screen and (max-width: 768px) {
+            .layui-layout-admin .layui-layout-left,
+            .layui-layout-admin .layui-body,
+            .layui-layout-admin .layui-footer {
+                left: 0;
+            }
+
+            .layui-layout-admin .layui-side {
+                left: -300px;
+            }
+        }
+        .logoInfo{
+            font-size: 25px;
+            font-family:"Lucida Calligraphy", cursive, serif, sans-serif;
+            /*font-weight: bold;*/
+        }
+
+        .itemDiv{
+            position: fixed;
+            top:60px;
+            bottom: 5px;
+            left: 0;
+            right: 0;
+            margin:0 auto;
+            width: 100%;
+            /*border:1px solid #F00*/
+        }
+    </style>
+    <link rel="stylesheet" href="views/css/global.css">
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="views/css/index.css">
+
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo layui-hide-xs" style="cursor: pointer;color: #fff !important" onclick="openItems('','');">
+            <img src="views/image/coffee.png" style="height:60px;float: left;margin-left: 25px;">
+            <div class="logoInfo">好运咖啡</div>
+        </div>
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item layui-hide-xs"><a href="">产地</a>
+                <dl class="layui-nav-child areaItem"></dl>
+            </li>
+            <li class="layui-nav-item layui-hide-xs"><a href="">包装</a>
+                <dl class="layui-nav-child packetItem"></dl>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right" lay-bar="disabled">
+
+            <li class="layui-nav-item layui-hide-xs cart" >
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary layui-btn-fluid " onclick="openCart()">
+                    <i class="layui-icon layui-font-12">&#xe657;</i>我的购物车
+                    <span class="layui-badge cartNum" style="top:15px;">0</span>
+                </button>
+            </li>
+            <li class="layui-nav-item layui-hide-xs"><a href="javascript:;" onclick="openOrders()">我的订单</a>
+            <li class="layui-nav-item layui-hide layui-show-md-inline-block" id="loginInfo">
+                <a href="login.html"><i class="layui-icon">&#xe66f;</i></a>
+                <div class="personCenter">
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="javascript:;" onclick="openUser();"><i class="layui-icon">&#xe66f;个人中心</i></a>
+                        </dd>
+                        <dd class="manage" style="display: none">
+                            <a href="views/admin.html"><i class="layui-icon">&#xe665;后台管理</i></a>
+                        </dd>
+                        <dd class="personCenter">
+                            <a href="javascript:;" onclick="updatePwd();"><i class="layui-icon">&#xe66f;修改密码</i></a>
+                        </dd>
+                        <dd>
+                            <a href="logout"><i class="layui-icon">&#xe682;注销</i></a>
+                        </dd>
+                    </dl>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="itemDiv">
+        <iframe id="main" src="" frameborder="0" scrolling="auto"></iframe>
+    </div>
+
+</div>
+<script src="layui/layui.js"></script>
+<script src="views/js/util.js"></script>
+<script>
+    var baseUrl;
+    //JS
+    layui.use(['element', 'layer', 'util'], function () {
+        var element = layui.element
+            , layer = layui.layer
+            , util = layui.util
+            , $ = layui.$;
+
+        baseUrl = getURL();
+        getUser();
+        loadData();
+        initIframe();
+        openItems("","");
+        loadArea();
+        loadPacket();
+    });
+
+    //加载数据，包括用户信息
+    function loadData() {
+        //加载购物车
+        loadCart();
+        setTimeout(function () {
+            if($.isEmptyObject(user)){
+                $("#loginInfo").find("a").eq(0).attr("href","login.html");
+                $("#loginInfo").find("a").eq(0).append("登录");
+                $(".personCenter").css("display","none");
+                // $(".personCenter").removeClass("layui-show");
+                // $("#loginInfo").html("<a href=\"views/login.html\" ><i class=\"layui-icon\">&#xe66f;</i>登录</a>");
+            }else{
+                // $("#loginInfo").html("<a href=\"javascript:;\" ><i class=\"layui-icon\">&#xe66f;</i>"+ user.name + "</a>");
+                $("#loginInfo").find("a").eq(0).attr("href","javascript:;");
+                $("#loginInfo").find("a").eq(0).append(user.name);
+                $(".personCenter").css("display","block");
+                if(user.loginName == "admin"){
+                    $(".manage").css("display","block");
+                }else {
+                    $(".manage").css("display","none");
+                }
+            }
+        },500);
+    }
+
+    function initIframe() {
+        var p_div = $(".layui-body").height();
+        // var h = document.body.clientHeight;
+        document.getElementById("main").style.height = p_div-10 + "px";
+    }
+
+    //打开首页
+    function openItems(area,packet) {
+        document.getElementById("main").src = baseUrl + "/views/items.html?place="+ area +"&packet="+packet;
+    }
+
+    //我的订单
+    function openOrders() {
+        if($.isEmptyObject(user)){
+            //登录页面
+            layer.msg('请先登录！', {
+                icon: 1,
+                time: 500
+            }, function(){
+                window.location = baseUrl + '/login.html'; //跳转到登入页
+            });
+        }else {
+            document.getElementById("main").src = baseUrl + "/views/order_grid.html";
+        }
+    }
+
+    //个人中心
+    function openUser() {
+        if($.isEmptyObject(user)){
+            //登录页面
+            layer.msg('请先登录！', {
+                icon: 1,
+                time: 500
+            }, function(){
+                window.location = baseUrl + '/login.html'; //跳转到登入页
+            });
+        }else {
+            document.getElementById("main").src = baseUrl + "/views/user_form.html?id=" + user.id;
+        }
+    }
+
+    //打开购物车
+    function openCart() {
+        if($.isEmptyObject(user)){
+            //登录页面
+            layer.msg('请先登录！', {
+                icon: 1,
+                time: 500 //1秒关闭（如果不配置，默认是3秒）
+            }, function(){
+                window.location = baseUrl + '/login.html'; //跳转到登入页
+            });
+        }else {
+            document.getElementById("main").src = baseUrl + "/views/cart_grid.html";
+        }
+    }
+
+    //获取购物车商品数量
+    function loadCart() {
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/cart",
+            data: {},
+            dataType: "json",
+            success: function (data) {
+                if (data.status) {
+                    $(".cartNum").text(data.total);
+                }
+            }
+        })
+    }
+
+    //加载地区下拉框数据
+    function loadArea() {
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/sort",
+            data: {"sort":"产地"},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    $.each(data.data,function (index,item) {
+                        $('.areaItem').append("<dd><a href=\"javascript:;\" onclick=\"openItems('"+  item.sortValue +"','');\">"+ item.sortValue +"</a></dd>");
+                    });
+                }
+            }
+        });
+    }
+
+    //加载包装下拉框数据
+    function loadPacket() {
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/sort",
+            data: {"sort":"包装"},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    $.each(data.data,function (index,item) {
+                        // $('.packetItem').append("<dd><a href=\"javascript:;\" onclick=\"openItems('','"+ item.sortValue +"');\">"+ item.sortValue +"</a></dd>);
+                        $('.packetItem').append("<dd><a href=\"javascript:;\" onclick=\"openItems('','"+  item.sortValue +"');\">"+ item.sortValue +"</a></dd>");
+                    });
+                }
+            }
+        });
+    }
+
+    //修改密码
+    function updatePwd() {
+        layer.open({
+            type: 2,
+            title:'修改密码',
+            area: ['300px', '220px'],
+            // anim: 5,
+            closeBtn:1
+            ,btn: ['确定', '取消']
+            ,yes: function(index, layero){
+                var formData = $(layero).find("iframe")[0].contentWindow.getData();
+                console.log(formData);
+                formData["type"] = "update";
+                $.ajax({
+                    type: "post",
+                    url: baseUrl + "/userPwd",
+                    data: formData,
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status) {
+                            layer.msg('修改成功，请重新登录！', {
+                                icon: 1,
+                                time: 500
+                            }, function(){
+                                layer.close(index);
+                                window.location = baseUrl + '/login.html'; //跳转到登入页
+                            });
+                        }else {
+                            layer.msg(data.data);
+                        }
+                    }
+                })
+            }
+            ,content: ['views/user_pwd.html?','no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+    }
+</script>
+</body>
+</html>

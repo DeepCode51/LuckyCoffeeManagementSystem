@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>类型管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <script src="../js/jquery-1.11.3.min.js"></script>
+    <script src="js/util.js"></script>
+    <style type="text/css">
+        body {
+            text-align: center;
+        }
+
+        html, body {
+            width: 100%;
+            height: 99%;
+        }
+
+        .layui-elem-field legend {
+            margin-left: 0;
+        }
+    </style>
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title">
+    <legend>咖啡分类管理</legend>
+</fieldset>
+<div class="layui-row">
+    <div class="layui-col-xs6 layui-col-sm6 layui-col-md6" style="border-right: 1px solid #9F9F9F;">
+        <div class="layui-panel" style="margin: 0 auto;">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="width: 60px">产地</label>
+                    <div class="layui-input-inline" style="width: 160px">
+                        <input type="text" name="sortValue" lay-verify="title1" autocomplete="off" placeholder="请输入产地"
+                               class="layui-input">
+                    </div>
+                    <div class="layui-input-inline">
+                        <button type="submit" class="layui-btn layui-btn-sm" lay-submit="" lay-filter="sort2"
+                                data-type="reload">查询
+                        </button>
+                        <button type="submit" class="layui-btn layui-btn-normal layui-btn-sm" lay-submit=""
+                                lay-filter="sort1" data-type="reload">添加
+                        </button>
+                        <button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">重置</button>
+                    </div>
+                </div>
+            </form>
+            <div class="inputBody showInitedDiv" style="margin: 0 auto;width: 80%">
+                <table class="table" id="area" lay-data="{height: 'full-200', cellMinWidth: 80}" lay-filter="list1">
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+        <div class="layui-panel" style="margin: 0 auto;">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="width: 60px">包装</label>
+                    <div class="layui-input-inline" style="width: 160px;">
+                        <input type="text" name="sortValue" lay-verify="title1" autocomplete="off" placeholder="请输入包装"
+                               class="layui-input">
+                    </div>
+                    <div class="layui-input-inline">
+                        <button type="submit" class="layui-btn layui-btn-sm" lay-submit="" lay-filter="sort4"
+                                data-type="reload">查询
+                        </button>
+                        <button type="submit" class="layui-btn layui-btn-normal layui-btn-sm" lay-submit=""
+                                lay-filter="sort3" data-type="reload">添加
+                        </button>
+                        <button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+            <div class="inputBody showInitedDiv" style="margin: 0 auto;width: 80%">
+                <table class="table" id="packet" lay-data="{height: 'full-200', cellMinWidth: 80}" lay-filter="list2">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script type="text/html" id="barDemo1">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="barDemo2">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script type="text/javascript">
+    var baseUrl = "";
+
+    layui.use(['form', 'table'], function () {
+        var form = layui.form,
+            table = layui.table;
+
+        baseUrl = getURL();
+        var h = $(document.body).height();
+
+        var loading = layer.msg('页面加载中...');
+        table.render({
+            id: 'sortTable'
+            , elem: '#area'
+            // ,toolbar: '#toolbarDemo1'
+            , url: baseUrl + '/sort' //数据接口
+            , method: 'post'
+            , cols: [[
+                // {type:'checkbox',  fixed: 'left'},
+                {type: 'numbers', title: '序号'}
+                , {field: 'id', title: 'ID', hide: true}
+                // ,{field:'sort',  title: '类型'}
+                , {field: 'sortValue', title: '分类', align: 'center'}
+                , {fixed: 'right', title: '操作', toolbar: '#barDemo1', align: 'center', width: 150}
+            ]]
+            , where: {"sort": "产地"}
+            , page: true//是否显示分页
+            , limits: [10, 20, 50]
+            // ,width:400
+            , height: h - 120 //容器高度
+            , limit: 10
+            , done: function () {
+                layer.close(loading);
+            }
+        });
+
+        var loading2 = layer.msg('页面加载中...');
+        table.render({
+            id: 'packetTable'
+            , elem: '#packet'
+            // ,toolbar: '#toolbarDemo2'
+            , url: baseUrl + '/sort' //数据接口
+            , method: 'post'
+            , cols: [[
+                // {type:'checkbox',  fixed: 'left'},
+                {type: 'numbers', title: '序号'}
+                , {field: 'id', title: 'ID', hide: true}
+                // ,{field:'sort',  title: '类型'}
+                , {field: 'sortValue', title: '分类', align: 'center'}
+                , {fixed: 'right', title: '操作', toolbar: '#barDemo2', align: 'center', width: 150}
+            ]]
+            // ,skin: 'line' //表格风格
+            //  ,even: true
+            , where: {"sort": "包装"}
+            , page: true//是否显示分页
+            , limits: [10, 20, 50]
+            // ,width:400
+            , height: h - 120 //容器高度
+            , limit: 10
+            , done: function () {
+                layer.close(loading2);
+            }
+        });
+
+        //左侧添加
+        form.on('submit(sort1)', function (data) {
+            var sortValue = $.trim(data.field.sortValue);
+            if (sortValue == null || sortValue == "" || typeof (sortValue) == "undefined") {
+                layer.msg('请输入添加内容！');
+                return false;
+            }
+            if(sortCheck("产地",sortValue)){
+                return false;
+            }
+            layer.confirm('确定添加分类吗', function (index) {
+                $.ajax({
+                    type: "post",
+                    url: baseUrl + "/sortAdd",
+                    data: {"sortValue": sortValue, "sort": "产地"},
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status) {
+                            layer.msg('添加成功！');
+                            //执行重载
+                            table.reload('sortTable', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                            });
+                        } else {
+                            if (data.code == -2) {
+                                layer.msg('请先登录！', {
+                                    icon: 1,
+                                    time: 500 //1秒关闭（如果不配置，默认是3秒）
+                                }, function () {
+                                    parent.window.location = baseUrl + '/login.html'; //跳转到登入页
+                                });
+                            }
+                        }
+                    }
+                });
+                layer.close(index);
+            });
+            return false;
+        });
+
+        //左侧 查询
+        form.on('submit(sort2)', function (data) {
+            //执行重载
+            table.reload('sortTable', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                , where: {
+                    keyWords: data.field.sortValue
+                }
+            });
+            return false;
+        });
+        //右侧 添加
+        form.on('submit(sort3)', function (data) {
+            var sortValue = data.field.sortValue;
+            if (sortValue == null || sortValue == "" || typeof (sortValue) == "undefined") {
+                layer.msg('请输入添加内容！');
+                return false;
+            }
+            if(sortCheck("包装",sortValue)){
+                return false;
+            }
+            layer.confirm('确定添加分类吗', function (index) {
+                $.ajax({
+                    type: "post",
+                    url: baseUrl + "/sortAdd",
+                    data: {"sort":"包装","sortValue":sortValue},
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status) {
+                            layer.msg('添加成功！');
+                            //执行重载
+                            table.reload('packetTable', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                            });
+                        } else {
+                            if (data.code == -2) {
+                                layer.msg('请先登录！', {
+                                    icon: 1,
+                                    time: 500 //1秒关闭（如果不配置，默认是3秒）
+                                }, function () {
+                                    parent.window.location = baseUrl + '/login.html'; //跳转到登入页
+                                });
+                            }
+                        }
+                    }
+                });
+                layer.close(index);
+            });
+            return false;
+        });
+        //右侧 查询
+        form.on('submit(sort4)', function (data) {
+            //执行重载
+            table.reload('packetTable', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                , where: {
+                    keyWords: data.field.sortValue
+                }
+            });
+            return false;
+        });
+
+        //监听行工具事件
+        table.on('tool(list1)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('确定删除吗', function (index) {
+                    //删除
+                    $.ajax({
+                        type: "post",
+                        url: baseUrl + "/sortDelete",
+                        data: {"id": data.id},
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.status) {
+                                //执行重载
+                                table.reload('sortTable', {
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    //刷新
+                    layer.close(index);
+                });
+            } else if (obj.event === 'edit') {
+                layer.prompt({
+                    formType: 2
+                    , value: data.sortValue
+                }, function (value, index) {
+                    if(sortCheck(data.sort,value)){
+                        return false;
+                    }
+                    $.ajax({
+                        type: "post",
+                        url: baseUrl + "/sortUpdate",
+                        data: {"id": data.id, "sort": data.sort, "sortValue": value},
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.status) {
+                                //执行重载
+                                table.reload('sortTable', {
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                });
+                            }else {
+                                if (data.code == -2) {
+                                    layer.msg('请先登录！', {
+                                        icon: 1,
+                                        time: 500
+                                    }, function () {
+                                        parent.window.location = baseUrl + '/login.html';
+                                    });
+                                }
+                            }
+                        }
+                    });
+
+                    layer.close(index);
+                });
+            }
+        });
+
+        //监听行工具事件
+        table.on('tool(list2)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('确定删除吗', function (index) {
+                    //删除
+                    $.ajax({
+                        type: "post",
+                        url: baseUrl + "/sortDelete",
+                        data: {"id": data.id},
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.status) {
+                                //执行重载
+                                table.reload('packetTable', {
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if (obj.event === 'edit') {
+                layer.prompt({
+                    formType: 2
+                    , value: data.sortValue
+                }, function (value, index) {
+                    // obj.update({
+                    //     sortValue: value
+                    // });
+                    if(sortCheck(data.sort,value)){
+                        return false;
+                    }
+                    $.ajax({
+                        type: "post",
+                        url: baseUrl + "/sortUpdate",
+                        data: {"id": data.id, "sort": data.sort, "sortValue": value},
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.status) {
+                                //执行重载
+                                table.reload('packetTable', {
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                });
+                            }else {
+                                if (data.code == -2) {
+                                    layer.msg('请先登录！', {
+                                        icon: 1,
+                                        time: 500
+                                    }, function () {
+                                        parent.window.location = baseUrl + '/login.html';
+                                    });
+                                }
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+
+    });
+
+    //分类唯一性校验
+    function sortCheck(sort,sortValue) {
+        var flag = false;
+        $.ajax({
+            type: "post",
+            url: baseUrl + "/sortCheck",
+            data: {"sort": sort, "sortValue": sortValue},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    if(data.data > 0){
+                        flag = true;
+                        layer.msg(sortValue + '已存在，请勿重复添加');
+                    }
+                }
+            }
+        });
+        return flag;
+    }
+
+</script>
+</body>
+</html>
